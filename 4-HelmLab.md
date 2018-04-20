@@ -312,45 +312,88 @@ Now that you have understood the structure of a kubernetes manifest file, you ca
 
 `cd`
 
-`helm create hellostage2`
+`helm create hellonginx`
         
 ## 2. Look at the chart directory content.
        
-`cd hellostage2`
+`cd hellonginx`
 
 `tree .`
 
 
 ![create tree](./images/treehelm.png)
 
+
 `nano values.yaml`
 
-Look at **values.yaml** and **modify it**. Prepare to deploy 3 replicas using the image that was created based on the tutorial. Specify the port (if you have not delete the pod from the tutorial, you can use a different port to be exposed). 
+Look at **values.yaml** and **modify it**. Prepare to deploy **3** replicas of the nginx image. Replace the service section and choose a port (like 30073 for instance) with the following code:
 
-The main content for values.yaml is as follows:
+```console
+  name: hellonginx-service
+  type: NodePort
+  externalPort: 80  
+  internalPort: 80  
+  nodePort: 30073
+```
+
+
+The main content for **values.yaml** is as follows:
 
 ```
-replicaCount: 3
+# Default values for hellonginx.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
 image:
-  repository: mycluster.icp:8500/default/hello-world
-  tag: 2
+  repository: nginx
+  tag: stable
   pullPolicy: IfNotPresent
+
 service:
-  name: hw-demo-service
+  name: hellonginx-service
   type: NodePort
-  externalPort: 8080
-  internalPort: 8080
+  externalPort: 80  
+  internalPort: 80  
   nodePort: 30073
+
 ingress:
   enabled: false
-````
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  path: /
+  hosts:
+    - chart-example.local
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
 
-![Values](images/values2.png)
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+````
 
 
 Review deployment template: 
 
-`nano /root/hellostage2/templates/deployment.yaml`
+`nano /root/hellonginx/templates/deployment.yaml`
 
 modify livenessProbe to get `/healthz` and remove the readinessProbe and resources directives.
 
@@ -385,7 +428,23 @@ spec:
 ```
 
 
-Review service template: add nodePort directive under ports
+
+
+Review the **service template**: 
+
+`nano /root/hellonginx/templates/service.yaml`
+
+Change the **-port section** with the following code:
+
+```console
+    - port: {{ .Values.service.externalPort }}
+      targetPort: {{ .Values.service.internalPort }}
+      protocol: TCP
+      nodePort: {{ .Values.service.nodePort }}
+      name: {{ .Values.service.name }}
+```
+
+So the service should look as follows:
 
 ```
 apiVersion: v1
@@ -411,7 +470,7 @@ spec:
 ```
 ## 3. Check the chart
 
-Go back to the helloStage2 path and check the validity of the helm chart.
+Go back to the hellonginx path and check the validity of the helm chart.
 
 `cd ..`
 
@@ -439,63 +498,72 @@ The helm chart that we created in the previous section that has been verified no
 
 ## 2. Install the chart to the training namespace
 
-`helm install hellostage2 --namespace training --tls`
+Type the following command and don't forget the dot at the end:
+
+`helm install --name hellonginx --namespace training --tls .`
 
 Results:
 ```console
-LAST DEPLOYED: Tue Apr 17 06:13:22 2018
+root:[hellonginx]: helm install --name hellonginx --namespace training --tls .
+NAME:   hellonginx
+LAST DEPLOYED: Thu Apr 19 23:49:47 2018
 NAMESPACE: training
 STATUS: DEPLOYED
 
 RESOURCES:
+==> v1beta2/Deployment
+NAME        DESIRED  CURRENT  UP-TO-DATE  AVAILABLE  AGE
+hellonginx  1        1        1           0          0s
+
 ==> v1/Service
-NAME                         TYPE      CLUSTER-IP  EXTERNAL-IP  PORT(S)       AGE
-terrifying-mule-hellostage2  NodePort  10.0.0.62   <none>       80:30073/TCP  0s
-
-==> v1beta1/Deployment
-NAME                         DESIRED  CURRENT  UP-TO-DATE  AVAILABLE  AGE
-terrifying-mule-hellostage2  3        3        3           0          0s
-
-==> v1/Pod(related)
-NAME                                          READY  STATUS             RESTARTS  AGE
-terrifying-mule-hellostage2-744f6ffb65-g4dwn  0/1    ContainerCreating  0         0s
-terrifying-mule-hellostage2-744f6ffb65-qcz7b  0/1    ContainerCreating  0         0s
-terrifying-mule-hellostage2-744f6ffb65-sjhsf  0/1    ContainerCreating  0         0s
+NAME        TYPE      CLUSTER-IP  EXTERNAL-IP  PORT(S)       AGE
+hellonginx  NodePort  10.0.0.131  <none>       80:30073/TCP  0s
 
 
 NOTES:
 1. Get the application URL by running these commands:
-  export NODE_PORT=$(kubectl get --namespace training -o jsonpath="{.spec.ports[0].nodePort}" services terrifying-mule-hellostage2)
+  export NODE_PORT=$(kubectl get --namespace training -o jsonpath="{.spec.ports[0].nodePort}" services hellonginx)
   export NODE_IP=$(kubectl get nodes --namespace training -o jsonpath="{.items[0].status.addresses[0].address}")
   echo http://$NODE_IP:$NODE_PORT
 ```
+At the end of the answer, copy & paste the last 3 lines:
+
+```console
+root:[hellonginx]:   export NODE_PORT=$(kubectl get --namespace training -o jsonpath="{.spec.ports[0].nodePort}" services hellonginx)
+root:[hellonginx]:   export NODE_IP=$(kubectl get nodes --namespace training -o jsonpath="{.items[0].status.addresses[0].address}")
+root:[hellonginx]:   echo http://$NODE_IP:$NODE_PORT
+http://1192.168.225.132:30073
+```
+So that you should see the url:
+`http://159.122.2.109:30073`
+
+Try this url and get the nginx hello:
+
+![Welcome Nginx](./images/nginx.png)
+
 
 ## 3. List the releases 
-
-(in this example,  the name of our release is `irreverant-duck`)
 
 `helm list --tls`
 
 Results:
 
 ```console
-NAME           	REVISION	UPDATED                 	STATUS  	CHART                               	NAMESPACE
-microfabric    	1       	Sat Apr  7 21:24:38 2018	DEPLOYED	ibm-microservicebuilder-fabric-2.1.0	default  
-monitoricp     	1       	Sat Apr  7 20:59:28 2018	DEPLOYED	ibm-icpmonitoring-1.0.0             	default  
-terrifying-mule	1       	Tue Apr 17 06:13:22 2018	DEPLOYED	hellostage2-0.1.0                   	training 
-vigilant-peahen	1       	Mon Apr  9 23:05:05 2018	DEPLOYED	demoapp-0.1.0                       	training 
+root:[hellonginx]: helm list --tls
+NAME      	REVISION	UPDATED                 	STATUS  	CHART                	NAMESPACE
+hellonginx	1       	Thu Apr 19 23:49:47 2018	DEPLOYED	hellonginx-0.1.0     	training 
+my-release	1       	Tue Apr 17 20:08:44 2018	DEPLOYED	ibm-jenkins-dev-1.0.0	default  
 ```
-Locate the hellostage2 (because we didn't specify a --name, it was given "terrifying mule" )
+
 
 ## 4. List the deployments
 
 `kubectl get deployments --namespace=training`
 
 ```console
-root:[~]: kubectl get deployments --namespace=training
-NAME                          DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-terrifying-mule-hellostage2   3         3         3            3           4m
-vigilant-peahen-demoapp       1         1         1            1           7d
+root:[hellonginx]: kubectl get deployments --namespace=training
+NAME         DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+hellonginx   1         1         1            1           9m
 ```
 
 ## 5. List the services
@@ -503,44 +571,112 @@ vigilant-peahen-demoapp       1         1         1            1           7d
 `kubectl get services --namespace=training`
 
 ```console
-root:[~]: kubectl get services --namespace=training
-NAME                          TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)        AGE
-terrifying-mule-hellostage2   NodePort    10.0.0.62    <none>        80:30073/TCP   5m
-vigilant-peahen-demoapp       ClusterIP   10.0.0.140   <none>        80/TCP         7d
+root:[hellonginx]: kubectl get services --namespace=training
+NAME         TYPE       CLUSTER-IP   EXTERNAL-IP   PORT(S)        AGE
+hellonginx   NodePort   10.0.0.131   <none>        80:30073/TCP   10m
 ```
 
 Locate the line port 80:300073.  
 
-Try opening `http://mycluster.icp:30073` in your browser.
+## 6. List the pods
+
+`kubectl get pods --namespace=training`
+
+**Results**
+
+```console
+root:[hellonginx]: kubectl get pods --namespace=training
+NAME                          READY     STATUS    RESTARTS   AGE
+hellonginx-6bcd9f4578-zqt6r   1/1       Running   0          11m
+```
+
+## 7. Upgrade 
+
+We now want to change the number of replicas to 3:
+
+`helm  upgrade hellonginx . --tls`
+
+**Results**
+```console
+root:[hellonginx]: helm  upgrade hellonginx . --tls
+Release "hellonginx" has been upgraded. Happy Helming!
+LAST DEPLOYED: Fri Apr 20 00:06:55 2018
+NAMESPACE: training
+STATUS: DEPLOYED
+
+RESOURCES:
+==> v1/Service
+NAME        TYPE      CLUSTER-IP  EXTERNAL-IP  PORT(S)       AGE
+hellonginx  NodePort  10.0.0.131  <none>       80:30073/TCP  17m
+
+==> v1beta2/Deployment
+NAME        DESIRED  CURRENT  UP-TO-DATE  AVAILABLE  AGE
+hellonginx  3        3        3           1          17m
+
+
+NOTES:
+1. Get the application URL by running these commands:
+  export NODE_PORT=$(kubectl get --namespace training -o jsonpath="{.spec.ports[0].nodePort}" services hellonginx)
+  export NODE_IP=$(kubectl get nodes --namespace training -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+
+```
 
 
 # Task 5: Defining the chart in the catalog
 
-Package the helm chart as a tgz file:
+A good idea is to define the chart in the catalog.
 
-`helm package hellostage2`
+First, package the helm chart as a tgz file:
 
-Use helm to serve a chart repository from the ICP master node on port 8879
+`cd`
 
-`helm serve --address mycluster.icp:8879`
+`helm package hellonginx`
+
+**Results**
+```console
+root:[~]: helm package hellonginx
+Successfully packaged chart and saved it to: /root/hellonginx-0.1.0.tgz
+````
+
+**Login**to the master:
+
+`bx pr login -a https://159.122.2.109:8443 --skip-ssl-validation`
+
+Then, use the "bx pr" command to load the chart:
+
+`bx pr load-helm-chart --archive /root/hellonginx-0.1.0.tgz`
+
+**Results**
+```console
+root:[~]: bx pr load-helm-chart --archive /root/hellonginx-0.1.0.tgz
+Loading helm chart
+  {"url":"https://icp-management-ingress:8443/helm-repo/charts/index.yaml"}
+OK
+
+Synch charts
+  {"message":"synch started"}
+OK
+```
+
 
 Leave the terminal and login to the ICP console with admin/admin :
 
-- Select **Menu > Manage > Repositories**
-
-- Click __Add repository__ and put in the `icpnfs` repository and its URL  `http://mycluster.icp:8879`
-
-- Click __Sync up repositories__ and confirm by clicking __Sync Up__.
-
 - Select __Menu > Catalog__
 
-- Find the `hello` chart from AppCenter
+- Find the `hellonginx` chart from AppCenter
 
-![search hello](images/hellostage2.png)
+![search hello](images/hellonginx2.png)
 
 - Click on the `hello` chart to get access to configuration.
 
-![hello chart](images/hellostage3.png)
+![hello chart](images/hellonginx3.png)
+
+- Click configure to see the parameters: 
+
+![hello chart](images/hellonginx4.png)
+
+Click **Install** to see the results. 
 
 Of course, you can customize the README.MD and add an icon to make the chart more appealing. 
 
