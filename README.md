@@ -2,7 +2,7 @@
 
 
 
-# Practical IBM Cloud Private Discovery Workshop
+# Practical IBM Cloud Private Workshop
 
 
 ![ICP Logo](./images/logoicp.png)

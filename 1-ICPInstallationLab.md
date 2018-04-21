@@ -760,7 +760,6 @@ After reboot, reconnect (ssh) to your VM with root credentials
 > You can now go back to the prerequisites for installing ICP.
 
 
-
 ---
 # End of Appendixe
 ---
