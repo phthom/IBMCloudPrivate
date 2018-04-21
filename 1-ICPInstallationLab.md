@@ -10,11 +10,9 @@
 # Single Node Installation of IBM Cloud Private
 ---
 
-![ICP Logo](./images/logo.png)
+![ICP Logo](./images/logoicp.png)
 
 +++
-
-
 
 # Table of Content
 
@@ -110,7 +108,7 @@ https://www.ibm.com/support/knowledgecenter/en/SSBS6K_2.1.0.2/kc_welcome_contain
 
 Be sure that you have already prepared a VMwareVM (see Appendix A) or a virtual server containing a **Ubuntu** system up and running. Login to the Ubuntu system as **root** or sudo -i once connected.
 
-Here are the steps :
+Here are the steps:
 
 ### Task 1 : Update the system
 
@@ -398,6 +396,7 @@ wget https://192.168.225.132:8443/api/cli/icp-linux-amd64 --no-check-certificate
 Finally add this plugin to bx:
 
 `bx plugin install icp-linux-amd64`
+
 `bx plugin show icp`
 
 ![ICP Command plugin help](./images/pluginhelp.png)
@@ -763,7 +762,7 @@ After reboot, reconnect (ssh) to your VM with root credentials
 
 
 ---
-# End of Appendixes
+# End of Appendixe
 ---
 
 <div style="background-color:black;color:white; vertical-align: middle; text-align:center;font-size:250%; padding:10px; margin-top:100px"><b>
