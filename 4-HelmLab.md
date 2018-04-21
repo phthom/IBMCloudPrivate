@@ -6,8 +6,9 @@ IBM Cloud Private - Helm Lab
  </b></a></div>
 
 ---
+![helmlogo2](images/helmlogo2.png)
 
-
+---
 
 # Helm Lab
 
@@ -17,9 +18,6 @@ Helm helps you manage Kubernetes applications — Helm Charts helps you define, 
 
 Charts are easy to create, version, share, and publish — so start using Helm and stop the copy-and-paste madness.
 
-
-
-![helm logo](./images/helmlogo.png)
 
 Table of Contents
 
