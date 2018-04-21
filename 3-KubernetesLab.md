@@ -3,7 +3,9 @@
 IBM Cloud Private - Kubernetes Lab
  </b></a></div>
 
----
+
+![kube2](images/kube2.png)
+-----------------------------
 
 # Lab 1 : Deploying Apps with Kubernetes
 
@@ -214,7 +216,7 @@ In the previous lab, we created an image with a 1 tag. Let's make a version of t
 
 If you are in "Lab 1" directory, you need to go to "Lab 2" directory:
 
-`cd ../"Lab 2`
+`cd ../"Lab 2"`
 
 Build a new version (2) of that application: 
 
@@ -358,3 +360,4 @@ IBM Cloud Private - Kubernetes Lab
  </b></a></div>
 
 ---
+‚
