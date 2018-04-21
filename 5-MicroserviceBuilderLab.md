@@ -7,6 +7,7 @@ IBM Cloud Private - Microservice Builder Lab
 
 ---
 
+![microbuilder](images/microbuilder.png)
 
 
 # Cloud-Native Microservice Builder Lab
@@ -17,8 +18,9 @@ Microservice Builder will guide you thru the tree creation of complete project i
 
 **Table of Contents**
 
-[[toc]]
+---
 
+[[toc]]
 
 ---
  
