@@ -3,12 +3,13 @@ IBM Cloud Private - Docker Lab
  </b></a></div>
 
  ---
-
  
+![Docker Logo](./images/docker2.png)
+ 
+ ---
 
 # Docker Lab
 
-![Docker Logo](./images/docker2.png)
 
 ## Prerequisites
 This set of instructions requires that docker is already installed and docker commands can be run from a bash shell. You can get more information at the [Docker website](https://www.docker.com/get-docker)
