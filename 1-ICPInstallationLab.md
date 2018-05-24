@@ -118,7 +118,7 @@ Use **putty** or **ssh** to get connected to the ubuntu VM. For example (replace
 
 `ssh root@192.168.225.132 `
 
-The password should be **password**.
+The password should be **root**, as stated in the VM description.
 
 ![login to the system](./images/ssh2.png)
 
@@ -231,7 +231,7 @@ Create a directory and move to that directory:
 Copy the ICP package into that directory:
 
 ```console
-docker run -e LICENSE=accept -v "$(pwd)":/data ibmcom/icp-inception:2.1.0.2 cp -r cluster /data `
+docker run -e LICENSE=accept -v "$(pwd)":/data ibmcom/icp-inception:2.1.0.2 cp -r cluster /data 
 ```
 
 > Note:  this docker command is executing the linux copy (cp) command from the volume (-v parameter). This will create a cluster directory with all necessary files.
