@@ -106,7 +106,7 @@ https://www.ibm.com/support/knowledgecenter/en/SSBS6K_2.1.0.2/kc_welcome_contain
 
 # 4. First Option: Install ICP on Ubuntu VM
 
-Be sure that you have already prepared a VMwareVM (see Appendix A) or a virtual server containing a **Ubuntu** system up and running. Login to the Ubuntu system as **root** or sudo -i once connected.
+Be sure that you have already prepared a VMware VM (see Appendix A) or a virtual server containing a **Ubuntu** system up and running. Login to the Ubuntu system as **root** or sudo -i once connected.
 
 Here are the steps:
 
@@ -114,44 +114,87 @@ Here are the steps:
 
 Before updating the operating system, check the **/etc/hosts** file in Linux.
 
-Use **putty** or **ssh** to get connected to the ubuntu VM. For example (replace the ip@ with the one given for this lab) :
+Use **putty** or **ssh** to get connected to the ubuntu VM. 
+> **Replace the ipaddress with the one given for this lab** :
 
-`ssh root@192.168.225.132 `
+`ssh root@ipaddress`
 
 The password should be **password**.
 
 ![login to the system](./images/ssh2.png)
 
-Once connected, check your ip address by typing the command:
-
+Once connected, check your (public) ip address by typing the command:
 
 `ifconfig`
 
-![Get your ip address](./images/ifconfig.png)
+```console 
+ifconfig
+eth0      Link encap:Ethernet  HWaddr 06:41:88:4e:6f:f3  
+          inet addr:10.45.154.246  Bcast:10.45.154.255  Mask:255.255.255.192
+          inet6 addr: fe80::441:88ff:fe4e:6ff3/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:1813 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:57 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:144586 (144.5 KB)  TX bytes:4102 (4.1 KB)
 
+eth1      Link encap:Ethernet  HWaddr 06:29:fc:86:31:fa  
+          inet addr:158.175.102.12  Bcast:158.175.102.15  Mask:255.255.255.240
+          inet6 addr: fe80::429:fcff:fe86:31fa/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:125968 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:101137 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:13508626 (13.5 MB)  TX bytes:17795310 (17.7 MB)
+```
+
+or use the following command :
+
+`curl ifconfig.co`
+
+Results:
+
+```console 
+curl ifconfig.co
+158.175.102.12
+```
+
+> Be sure to use the public IP
 
 Then, edit the hosts file with this command:
 
-` nano /etc/hosts  `
+`nano /etc/hosts`
+
+Results:
+
+```console
+127.0.0.1	localhost
+127.0.1.1	niceicp15.sl.workshop	niceicp15
+```
 
 Change the following line:
 
-**127.0.1.1      ubuntu**
+**127.0.1.1**      ubuntu
 
-to your ip address (that could be different from the following line):
+to your ip address (please change your ip-address with your one):
 
-**192.168.225.132**      ubuntu
+**192.168.225.132**     ubuntu
 
-Save the file (ctrl O, enter, ctrl X )
+> Save the file (ctrl O, enter, ctrl X )
 
-Your /etc/hosts file should looks like that:
-
-![Edit the /etc/hosts file](./images/etchosts.png)
-
-
-Use the following command to **update** the system with some complementary packages:
+Your /etc/hosts file should look like that after the change (please don't touch the hostnames):
 
 ```console
+more /etc/hosts
+127.0.0.1	    localhost
+192.168.225.132	niceicp15.sl.workshop	niceicp15
+```
+
+
+Use the following 2 commands to **update** the system with some complementary packages:
+
+```console
+apt update
 apt-get install apt-transport-https ca-certificates curl software-properties-common python-minimal
 ```
 
@@ -231,7 +274,7 @@ Create a directory and move to that directory:
 Copy the ICP package into that directory:
 
 ```console
-docker run -e LICENSE=accept -v "$(pwd)":/data ibmcom/icp-inception:2.1.0.2 cp -r cluster /data `
+docker run -e LICENSE=accept -v "$(pwd)":/data ibmcom/icp-inception:2.1.0.2 cp -r cluster /data
 ```
 
 > Note:  this docker command is executing the linux copy (cp) command from the volume (-v parameter). This will create a cluster directory with all necessary files.
