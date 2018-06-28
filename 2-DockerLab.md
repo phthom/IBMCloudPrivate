@@ -318,10 +318,17 @@ EXPOSE 80
 
 Here, what we are building is an image that will run the nginx proxy server for us. Look at the set of instructions and it should be pretty clear. After the standard FROM and MAINTAINER instructions, we are executing a couple of RUN instructions. A RUN instruction is used to execute any commands during the **build** process. In this case we are running a package update and then installing nginx. The ENTRYPOINT is then running the nginx executable and we are using the EXPOSE command here to inform what port the container will be listening on. Remember in our earlier chapters, we saw that if we use the -P command, then the EXPOSE port will be used by default. However, you can always change the host port via the -p parameter as needed.
 
-`docker run -d -p 80:80 --name webserver myimage`
+`docker run -d -p 80:8081 --name webserver myimage`
 
-However this command will not work on the ICP Ubuntu VM because ICP (the Calico component will take over the ports/network for security reason).
+`curl http://ipaddress:8081`
 
+Results :
+```console
+# curl http://159.122.190.251:8081
+curl: (7) Failed to connect to 159.122.190.251 port 8081: Connection refused
+```
+
+This command will not work on the ICP Ubuntu VM because ICP (the Calico component will take over the ports/network for security reason).
 
 
 ## Conclusion

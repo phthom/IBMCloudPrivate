@@ -16,7 +16,51 @@
 
 # Table of Content
 
-[[toc]]
+- [1. IBM Cloud Private Overview](#1-ibm-cloud-private-overview)
+    + [What is a private Cloud ?](#what-is-a-private-cloud--)
+    + [Terminology](#terminology)
+    + [Architecture](#architecture)
+- [2. Objectives](#2-objectives)
+- [3. Prerequisites](#3-prerequisites)
+- [4. First Option: Install ICP on Ubuntu VM](#4-first-option--install-icp-on-ubuntu-vm)
+    + [Task 1 : Configuring the system](#task-1---configuring-the-system)
+    + [Task 2 : Add Docker’s official GPG key](#task-2---add-docker-s-official-gpg-key)
+    + [Task 3: Add a repo to get the Docker](#task-3--add-a-repo-to-get-the-docker)
+    + [Task 4: Get Docker](#task-4--get-docker)
+    + [Task 5: Download IBM Cloud Private](#task-5--download-ibm-cloud-private)
+    + [Task 6: SSH Keys setup](#task-6--ssh-keys-setup)
+    + [Task 7: Customize ICP](#task-7--customize-icp)
+    + [Task 7: Install ICP](#task-7--install-icp)
+    + [Task 8: Install and configure CLIs  (kubectl, ic px, ic dev)](#task-8--install-and-configure-clis---kubectl--ic-px--ic-dev-)
+    + [Task 9: Adding persistent storage to Kubernetes](#task-9--adding-persistent-storage-to-kubernetes)
+    + [Task 10: End of installation](#task-10--end-of-installation)
+- [5. Second Option: Using Vagrant and VirtualBox](#5-second-option--using-vagrant-and-virtualbox)
+- [6. Conclusion](#6-conclusion)
+    + [Results](#results)
+- [End of Lab](#end-of-lab)
+- [appendix A : Preparing your VM (VMWare) with Ubuntu](#appendix-a---preparing-your-vm--vmware--with-ubuntu)
+    + [Task A1 - Download Ubuntu](#task-a1---download-ubuntu)
+    + [Task A2 - Create a VM](#task-a2---create-a-vm)
+    + [Task A3 - Set the language](#task-a3---set-the-language)
+    + [Task A4 - Set the keyboard](#task-a4---set-the-keyboard)
+    + [Task A5 - Install Ubuntu Server](#task-a5---install-ubuntu-server)
+    + [Task A6 - Select Location](#task-a6---select-location)
+    + [Task A7 - Select locales](#task-a7---select-locales)
+    + [Task A8 - Choose a hostname](#task-a8---choose-a-hostname)
+    + [Task A9 - Choose a username](#task-a9---choose-a-username)
+    + [Task A10 - Type a password](#task-a10---type-a-password)
+    + [Task A12 - Partition your disk](#task-a12---partition-your-disk)
+    + [Task A13 - No Proxy](#task-a13---no-proxy)
+    + [Task A14 - Launch the installation](#task-a14---launch-the-installation)
+    + [Task A15 - Add some packages](#task-a15---add-some-packages)
+    + [Task A16 - GRUB](#task-a16---grub)
+    + [Task A17 - Login for the first time](#task-a17---login-for-the-first-time)
+    + [Task A18 - Get the IP address](#task-a18---get-the-ip-address)
+    + [Task A19 - SSH to the VM](#task-a19---ssh-to-the-vm)
+    + [Task A20  - Update the OS](#task-a20----update-the-os)
+    + [Task A21 - Define the network interface](#task-a21---define-the-network-interface)
+    + [Task A22 - You are now ready to start the ICP installation](#task-a22---you-are-now-ready-to-start-the-icp-installation)
+- [End of Appendix](#end-of-appendix)
 
 
 +++
@@ -25,7 +69,7 @@
 
 **IBM Cloud Private** is a private cloud platform for developing and running workloads locally. It is an integrated environment that enables you to design, develop, deploy and manage on-premises, containerized cloud applications behind your firewall. It includes the container orchestrator Kubernetes, a private image repository, a management console and monitoring frameworks.
 
-### What is private Cloud
+### What is a private Cloud ?
 
  Private cloud is a cloud-computing model run solely for one organization. It can be managed internally or by third party, and can be hosted behind the company firewall or externally. Private cloud offers the benefits of a public cloud, including rapid deployment and scalability plus ease of use and elasticity, but also provides greater control, increased performance, predictable costs, tighter security and flexible management options. Customize it to your unique needs and security requirements.
 
@@ -67,7 +111,7 @@
 
 ### Architecture
 
-See below a picture showing ICP architecture and most common components.
+See below a global picture showing ICP architecture and most common components.
 
 ![Architecture](./images/architecture.png)
 
@@ -76,7 +120,7 @@ This lab is going to focus on the couple "Docker & Kubernetes" which is the main
 # 2. Objectives
 
 
-In this workshop, you will prepare and install IBM Cloud Private (ICP) on a **single node** (host) running on a VM (thru VMware, Virtual Server in a Cloud or VirtualBox).
+In this first lab, you will prepare and install IBM Cloud Private (ICP) on a **single node** (host) running on a VM (thru VMware or it could be a Virtual Server in a Cloud or a VirtualBox).
 
 You will learn how to:
 
@@ -93,33 +137,35 @@ This lab needs some hardware and software prerequisites.
 
 At least (minimal):
 - [ ] one host (physical or virtual)
-- [ ] CPU = 8 cores
+- [ ] CPU = 8 cores (or virtual cores)
 - [ ] RAM = 10 GB (10,240 MB)
-- [ ] Storage = 40 to 80 GB
+- [ ] Storage = 40 GB (depending on the other solutions that you install on top of ICP)
 
 Depending on the installation types:
 - [ ] First option: Ubuntu 16.04 (Sever or Desktop) in a **VMware VM**
 - [ ] Second Option:  Vagrant and **VirtualBox**
 
-If you need some more help, see the official documentation: [here](https://www.ibm.com/support/knowledgecenter/en/SSBS6K_2.1.0.2/kc_welcome_containers.html)
-https://www.ibm.com/support/knowledgecenter/en/SSBS6K_2.1.0.2/kc_welcome_containers.html
+If you need some more help, see the official documentation: [here](https://www.ibm.com/support/knowledgecenter/en/SSBS6K_2.1.0.3/kc_welcome_containers.html)
+
+or
+
+https://www.ibm.com/support/knowledgecenter/en/SSBS6K_2.1.0.3/kc_welcome_containers.html
 
 # 4. First Option: Install ICP on Ubuntu VM
 
 Be sure that you have already prepared a VMware VM (see Appendix A) or a virtual server containing a **Ubuntu** system up and running. Login to the Ubuntu system as **root** or sudo -i once connected.
 
+> **ipaddress** is the ip address of the VM and subsequently the ip address of the different nodes in this lab.
+
 Here are the steps:
 
-### Task 1 : Update the system
+### Task 1 : Configuring the system
 
 Before updating the operating system, check the **/etc/hosts** file in Linux.
 
 Use **putty** or **ssh** to get connected to the ubuntu VM. 
-> **Replace the ipaddress with the one given for this lab** :
 
 `ssh root@ipaddress`
-
-The password should be **password**.
 
 ![login to the system](./images/ssh2.png)
 
@@ -127,8 +173,9 @@ Once connected, check your (public) ip address by typing the command:
 
 `ifconfig`
 
+Results:
 ```console 
-ifconfig
+# ifconfig
 eth0      Link encap:Ethernet  HWaddr 06:41:88:4e:6f:f3  
           inet addr:10.45.154.246  Bcast:10.45.154.255  Mask:255.255.255.192
           inet6 addr: fe80::441:88ff:fe4e:6ff3/64 Scope:Link
@@ -153,43 +200,41 @@ or use the following command :
 `curl ifconfig.co`
 
 Results:
-
 ```console 
-curl ifconfig.co
+# curl ifconfig.co
 158.175.102.12
 ```
 
-> Be sure to use the public IP
+> This address should be same as the one used to ssh your VM.
 
 Then, edit the hosts file with this command:
 
 `nano /etc/hosts`
 
 Results:
-
 ```console
 127.0.0.1	localhost
-127.0.1.1	niceicp15.sl.workshop	niceicp15
+127.0.1.1	myhostname.workshop	myhostname
+...
 ```
 
-Change the following line:
+> Note : you can see some IP v6 definitions - don't touch them.
+> Don't touch the hostnames
 
-**127.0.1.1**      ubuntu
+Change the line containing **127.0.1.1** with your ipaddress :
 
-to your ip address (please change your ip-address with your one):
-
-**192.168.225.132**     ubuntu
+**123.456.789.123**   myhostname.workshop	    myhostname     
 
 > Save the file (ctrl O, enter, ctrl X )
 
 Your /etc/hosts file should look like that after the change (please don't touch the hostnames):
 
 ```console
-more /etc/hosts
-127.0.0.1	    localhost
-192.168.225.132	niceicp15.sl.workshop	niceicp15
+# more /etc/hosts
+127.0.0.1	        localhost
+123.456.789.123 	niceicp15.sl.workshop	niceicp15
+...
 ```
-
 
 Use the following 2 commands to **update** the system with some complementary packages:
 
@@ -202,7 +247,7 @@ Check carefully the output to see if you have errors and especially if you canno
 
 Increase your virtual memory maximum by typing the command:
 
-`sysctl -w vm.max_map_count=262144 `
+`sysctl -w vm.max_map_count=262144`
 
 ![apt install](./images/Update2.png)
 
@@ -223,23 +268,23 @@ Use the following 2 commands:
 add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 ```
 
-`apt-get update `
+`apt-get update`
 
 ### Task 4: Get Docker
 
 You can list all versions available in the added repo:
 
-`apt-cache madison docker-ce `
+`apt-cache madison docker-ce`
 
-Use the following command to get Docker installed (Docker version 17.09 is the version supported by IBM Cloud Private 2.1.0.2):
+Use the following command to get Docker installed (Docker version 17.12.1 is the maximum version supported by IBM Cloud Private 2.1.0.3):
 
-`apt-get install docker-ce=17.09.0~ce-0~ubuntu `
+`apt-get install docker-ce=17.12.1~ce-0~ubuntu`
 
 ![apt install](./images/InstallDocker.png)
 
 Check that Docker is running (client and server):
 
-`docker version `
+`docker version`
 
 ![Check Docker is running](./images/CheckDocker.png)
 
@@ -259,9 +304,9 @@ Another lab will go in detail to explain how Docker is managing the images and r
 
 We are going to use Docker to download the ICP-ce (community edition) package from the **dockerHub** web site:
 
-`docker pull ibmcom/icp-inception:2.1.0.2 `
+`docker pull ibmcom/icp-inception:2.1.0.3`
 
-IBM has packaged all the main components necessary for the installation in one package (note that you can change the version to a more recent one if needed). The pull sub-command is going to download the image on the local file system (the image  can be run to install ICP).
+IBM has packaged all the main components necessary for the installation in one package (note that you can change the version to a more recent one if needed). The pull sub-command is going to download the image on the local file system (the image will be run to install ICP).
 
 ![Download ICP-ce from Docker HUB](./images/DownloadICP.png)
 
@@ -274,10 +319,10 @@ Create a directory and move to that directory:
 Copy the ICP package into that directory:
 
 ```console
-docker run -e LICENSE=accept -v "$(pwd)":/data ibmcom/icp-inception:2.1.0.2 cp -r cluster /data
+docker run -e LICENSE=accept -v "$(pwd)":/data ibmcom/icp-inception:2.1.0.3 cp -r cluster /data
 ```
 
-> Note:  this docker command is executing the linux copy (cp) command from the volume (-v parameter). This will create a cluster directory with all necessary files.
+> Note:  this docker command is executing the linux copy (cp) command from the volume (-v parameter). This will create a cluster directory in /opt/icp with all necessary files.
 
 
 ### Task 6: SSH Keys setup 
@@ -294,12 +339,15 @@ We are going to generate new ssh keys in the /opt/icp/cluster directory:
 
 > Finally a new key should now exist in the /opt/icp/cluster:
 
+`ls /opt/icp/cluster`
+
 ![Generate new keys](./images/keys.png)
 
 ### Task 7: Customize ICP
 
-Add the IP address of each node in the cluster to the /opt/icp/cluster/hosts file (in our case, we use the **same ip address** for each component). 
-> Your IP address could be different from the one used here. 
+Add the IP address of each node in the cluster to the **/opt/icp/cluster/hosts file** (in our case, we use the same ip address for each component). 
+
+> Use the unique **ipaddress** that you have already used.
 
 `nano /opt/icp/cluster/hosts`
 
@@ -313,6 +361,8 @@ To understand the installation setup, you can look at the /opt/icp/cluster/confi
 
 No need to change for default installation. 
 
+> *hosts* and *config.yaml* are the 2 most important files to parameter the ICP installation. In a "standard configuration" with multiple worker nodes, you should specify a list of IP addresses under the worker section. At the time of this version, only ip addresses are supported in the *hosts* file. 
+
 **You are now ready to install IBM Cloud Private**.
 
 
@@ -320,25 +370,33 @@ No need to change for default installation.
 
 Finally install ICP by using those commands:
 
-`cd /opt/icp/cluster  `
+`cd /opt/icp/cluster`
 
 ```console
-docker run -e LICENSE=accept --net=host -t -v "$(pwd)":/installer/cluster ibmcom/icp-inception:2.1.0.2 install
+docker run -e LICENSE=accept --net=host -t -v "$(pwd)":/installer/cluster ibmcom/icp-inception:2.1.0.3 install
 ```
 
-Installation should last around 30 minutes. Check messages.
-In case of error, make the appropriate change in the configuration files. Sometimes the installation can slowdown a little bit with **Retrying** messages  (during Cloudant or IAM startup for instance).
+Installation should last around 20 minutes. Check messages.
+In case of error (red messages), make the appropriate change in the configuration files. Sometimes the installation can slowdown a little bit with **Retrying** messages  (during Cloudant or IAM startup for instance).
+
+The end of the installation should look like this :
 
 ![End of the Installation](./images/EndInstall.png)
 
-> Note that during a standard installation, there are no failures and no errors. If some errors occur and the install exits then first retry the install command and follow the instructions. If it doesn't work then "uninstall" ICP, correct the issue and restart the install process.
+> Note that during a simple installation, there are **no failures and no errors**. If some errors occur and the install exits then first retry the install command and follow the instructions. If it doesn't work then "uninstall" ICP, correct the issue and restart the install process.
 
-> **After the end of the installation, WAIT 5 MINUTES BEFORE GOING TO THE NEXT STEP**(i.e logging to the master).
+**In case of Uninstall**
+```console
+docker run -e LICENSE=accept --net=host -t -v "$(pwd)":/installer/cluster ibmcom/icp-inception:2.1.0.3 uninstall
+```
 
 
-Use the green link to get access to the console (admin/admin) in a browser:
+**BEFORE GOING TO THE NEXT STEP, WAIT 5 MINUTES** so that everything can start gracefully. 
 
-`https://192.168.225.132:8443 `  
+
+Use the green link at the end of the installation script to get access to the console (admin/admin) in a browser:
+
+`https://ipaddress:8443`  
 
 ![Login to ICP](./images/LoginICP.png)
 
@@ -346,23 +404,21 @@ You should receive the **Welcome Page**:
 
 ![Welcome to ICP](./images/Welcome.png)
 
-Click on the **Hamburger** menu (top left) to look at all the possibilities:
+Click on the **Catalog** menu (top right) to look at the list of applications already installed:
 
 ![Menu](./images/Hamburger.png)
 
-Click on **Catalog>Helm** Charts to visit the Catalog (it could take au few seconds to refresh the first time):
-
-![Menu](./images/Catalog.png)
+The **Catalog** shows Charts that you can visit (it could take au few seconds to refresh the first time)
 
 You can look at the (helm) catalog and visit some entries (but don't create any application at the moment).
 
-### Task 8: Install and configure CLIs  (kubectl, bx px, bx dev)
+### Task 8: Install and configure CLIs  (kubectl, ic px, ic dev)
 
 At this point, you will need to install the **Kubernetes CLI** (command kubectl).  
 For that purpose, open a ssh terminal with the Ubuntu VM in root mode and type the following command:
 
 ```console
-docker run -e LICENSE=accept --net=host -v /usr/local/bin:/data ibmcom/icp-inception:2.1.0.2 cp /usr/local/bin/kubectl /data
+docker run -e LICENSE=accept --net=host -v /usr/local/bin:/data ibmcom/icp-inception:2.1.0.3 cp /usr/local/bin/kubectl /data
 ```
 
 This docker command will copy the kubectl program to the /usr/local/bin. 
@@ -376,25 +432,79 @@ Click on Configure client:
 
 ![Configure Client](./images/ClientSetup.png)
 
-Then Copy & Paste the 5 lines into the ssh terminal.
+This 5 lines contain a token that change every 4 hours. So then, you generally have to use these 5 commands to get connected  
 
-> You can also copy these lines to a text file for further use
+Go back to the ssh or putty terminal :
 
-![Configure Client](./images/KubectlSetup.png)
+`cd`
 
-As a result, you will see that you are now **connected** to our cluster (with only one node):
+`nano connect2icp.sh`
+
+Copy the following code (inspired from the 5 lines) :
+
+```console
+CLUSTERNAME=mycluster
+ACCESS_IP=`curl ifconfig.co`
+USERNAME=admin
+PASSWD=admin
+
+token=$(curl -s -k -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" -d "grant_type=password&username=$USERNAME&password=$PASSWD&scope=openid" https://$ACCESS_IP:8443/idprovider/v1/aut$
+
+kubectl config set-cluster $CLUSTERNAME.icp --server=https://$ACCESS_IP:8001 --insecure-skip-tls-verify=true
+kubectl config set-context $CLUSTERNAME.icp-context --cluster=$CLUSTERNAME.icp
+kubectl config set-credentials admin --token=$token
+kubectl config set-context $CLUSTERNAME.icp-context --user=admin --namespace=default
+kubectl config use-context $CLUSTERNAME.icp-context
+```
+
+Save the file (ctrl O, enter, ctrl X ) and ake this file executable :
+
+`chmod +x connect2icp.sh`
+
+Then execute that shell program :
+
+`~/connect2icp.sh`
+
+Results :
+
+```console
+# ~/connect2icp.sh
+Cluster "cluster.local" set.
+Context "cluster.local-context" modified.
+User "admin" set.
+Context "cluster.local-context" modified.
+Switched to context "cluster.local-context".
+```
+
+As a result, you will see that you are now **connected** to the cluster (with only one node):
 
 `kubectl version --short`
 
+Results :
+
+```console
+# kubectl version --short
+Client Version: v1.10.0
+Server Version: v1.10.0+icp
+```
+
+Try this command to show all the worker nodes :
+
 `kubectl get nodes`
 
-> After a long period of inactivity, if you see some connection error when typing a kubectl command then redo that step.
+Results :
+
+```console
+# kubectl get nodes
+NAME            STATUS    ROLES     AGE       VERSION
+159.8.136.130   Ready     <none>    1h        v1.10.0+icp
+```
+
+> After a long period of inactivity, if you see some connection error when typing a kubectl command then re-execute the `~/connect2icp.sh` command.
 
 To get help from the kubectl, just type this command:
 
 `kubectl`
-
-
 
 > **Optional** : it could be interesting to define an alias name for docker and kubectl commands. 
 
@@ -407,9 +517,9 @@ To do so, from the ssh terminal, type the following commands:
 At the end of the file, add the 2 lines:
 
 ```console
-alias k=kubectl
-alias d=docker
-alias h=helm 
+alias k='kubectl'
+alias d='docker'
+alias h='helm' 
 ```
 
 Save the file (ctrl O, enter, ctrl X ). Source your script with the following command:
@@ -420,53 +530,90 @@ Now test your new commands:
 
 ![Alias](./images/testK.png)
 
-Finally, you can also install the bx command:
+Finally, you can also install the **ic** command (former bx command) :
 
 `curl -fsSL https://clis.ng.bluemix.net/install/linux | sh`
 
 ![bx CLI](./images/bx CLI.png)
 
-the **bx** command is a genereric command for all the IBM Cloud (private and public). The name bx comes from Bluemix. The bx command is using pugins to add some features.
+the **ic** command is a generic command for all the IBM Cloud (private and public). The former name bx comes from Bluemix. You can also use **ibmcloud** instead of ic or bx.
 
-Now, download the bx pr **plugin** to get the ICP specific commands:
+The ic command is using **plugins** to add some features. Now, download the ic pr **plugin** to get the ICP specific commands:
 
 ```console
-wget https://192.168.225.132:8443/api/cli/icp-linux-amd64 --no-check-certificate
+wget https://ipaddress:8443/api/cli/icp-linux-amd64 --no-check-certificate
 ```
 
 ![Download the ICP plugin](./images/plugin.png)
 
-Finally add this plugin to bx:
+Finally add this plugin to ic :
 
-`bx plugin install icp-linux-amd64`
+`ic plugin install icp-linux-amd64`
 
-`bx plugin show icp`
+`ic plugin show icp`
 
 ![ICP Command plugin help](./images/pluginhelp.png)
 
-Before using the 'bx pr', you must login to the master:
+Before using the 'ic pr', you must login to the master:
 
-`bx pr login -a https://192.168.225.132:8443 --skip-ssl-validation`
+`ic pr login -a https://mycluster.icp:8443 --skip-ssl-validation`
 
 > For the login : admin/admin 
 
-![bx pr login command](./images/bxprlogin.png)
+```console
+# ic pr login -a https://mycluster.icp:8443 --skip-ssl-validation
+API endpoint: https://mycluster.icp:8443
 
-Now you can type few commands concerning your cluster:
+Username> admin
 
-`bx pr masters mycluster`
+Password> 
+Authenticating...
+OK
 
-![showing the cluster](./images/mycluster.png)
+Select an account:
+1. mycluster Account (id-mycluster-account)
+Enter a number> 1
+Targeted account mycluster Account (id-mycluster-account)
 
-Among all sub-commands in 'bx pr', there are some commands to manage the infrastructure components like :
+Configuring helm and kubectl...
+Configuring kubectl: /root/.bluemix/plugins/icp/clusters/mycluster/kube-config
+Property "clusters.mycluster" unset.
+Property "users.mycluster-user" unset.
+Property "contexts.mycluster-context" unset.
+Cluster "mycluster" set.
+User "mycluster-user" set.
+Context "mycluster-context" created.
+Switched to context "mycluster-context".
+
+Cluster mycluster configured successfully.
+
+Configuring helm: /root/.helm
+Helm configured successfully
+
+```
+
+With that ic pr CLI, you can manage the infrastructure part of the cluster like adding new worker nodes (machine-type-add, worker-add) and so on.
+
+Then you can type some commands concerning your cluster:
+
+`ic pr masters mycluster`
+
+Results
+```console
+# ic pr masters mycluster
+ID                      Private IP        Machine Type   State   
+mycluster-00000000-m1   159.122.190.251   -              deployed   
+```
+
+Among all sub-commands in 'ic pr', there are some commands to manage the infrastructure components like :
 - cluster
 - workers (adding, removing ...)
-- register
+- register (docker image management )
 
 
-Finally also add the 'bx dev' plugin to successfully use the **Microservice Builder**:
+Finally also add the 'ic dev' plugin to successfully use the **Microservice Builder**:
 
-`bx plugin install dev -r Bluemix`
+`ic plugin install dev -r Bluemix`
 
 ![Adding the bx dev plugin](./images/bx dev.png)
 
@@ -562,14 +709,14 @@ At this point, you can now go thru some other labs to implement applications usi
 
 # 5. Second Option: Using Vagrant and VirtualBox
 
-This option is an alternative to the previous (simple) detailled installation. We are not covering this installation for the moment but you can try it on your own laptop. 
+This option is an alternative to the previous (simple) detailed installation. We are not covering this installation for the moment but you can try it on your own laptop. 
 This ICP installation uses VirtualBox (that you need to install as a prerequisites).
 
 The link below explain the steps:
 
 https://github.com/IBM/deploy-ibm-cloud-private/blob/master/docs/deploy-vagrant.md
 
-Note: this installation is using ICP version 2.1.0.1 instead of the latest one. You should change the version to 2.1.0.2 in the configuration file. Also don't stop the VM and use the vagrant suspend command. 
+Note: this installation is using ICP version 2.1.0.1 instead of the latest one. You should change the version to **2.1.0.3**in the configuration file. Also don't stop the VM and use the vagrant suspend command. 
 
 
 # 6. Conclusion
@@ -580,7 +727,7 @@ You finally went thru the following features :
 - [x] You setup a VM using Ubuntu version 16.04
 - [x] You checked all the prerequisites before the ICP installation
 - [x] You installed Docker 
-- [x] You installed ICP community edition (version 2.1.0.2) on one host
+- [x] You installed ICP community edition (version 2.1.0.3) on one host
 - [x] You connected to the ICP console
 - [x] You setup the kubectl command line
 - [x] You setup some persistent storage
@@ -644,7 +791,7 @@ Select your locales (Other>Europe>France for example)
 
 ###  Task A8 - Choose a hostname
 
-Change the hostname of leave the default (UBUNTU)
+Change the hostname of leave the default (ubuntu)
 
 ![Change the hostname](./images/Hostname.png)
 
@@ -664,7 +811,7 @@ Choose a user name (phil in my example) and choose a password (password) and do 
 
 ###  Task A12 - Partition your disk
 
-Choose "use entire disk" and accept the partitionning
+Choose "use entire disk" and accept the proposed partitioning
 
 ![Change to use entire disk](./images/Storage.png)
 
@@ -672,8 +819,8 @@ Choose "use entire disk" and accept the partitionning
 
 ###  Task A13 - No Proxy
 
-Now the package manager "apt" gets configured. Leave the HTTP proxy line empty
-unless you're using a proxy server to connect to the Internet
+Leave the HTTP proxy line empty
+(unless you're using a proxy server to connect to the Internet)
 
 ![Leave proxy to empty line](./images/proxy.png)
 
@@ -682,18 +829,18 @@ unless you're using a proxy server to connect to the Internet
 I like to update my servers automatically. Therefore, I select Install Security
 Updates automatically
 
-![select automatic secutity patches](./images/security.png)
+![select automatic security patches](./images/security.png)
 
 ###  Task A15 - Add some packages
 
-The only items I select here are **OpenSSH server**, **Standard System
-Utilities**, **manual package selection** and **Virtual Host** so that I can immediately connect to the system with an SSH client such as PuTTY after the installation has finished
+Select the following items : **OpenSSH server**, **Standard System
+Utilities**, **manual package selection** and **Virtual Host** so that I can immediately connect to the system with a SSH client such as PuTTY after the installation has finished
 
 ![select packages](./images/packages.png)
 
 ###  Task A16 - GRUB
 
-Accept to install GRUB and this will end the installation process with a reboot of the VM
+Accept to install GRUB and this will end the installation process with a **reboot** of the VM :
 
 ![accept Grub](./images/Grub.png)
 
@@ -707,9 +854,9 @@ First login with  your credentials (that you defined during the installation) **
 
 Get the IP address of this virtual machine by typing:
 
-``` ifconfig ```
+`ifconfig`
 
-In that case look at the Ethernet interface and get the inet addr : 192.168.225.132 (for example)
+In that case look at the Ethernet interface and get the inet addr : 192.168.225.132 (for example). Collect also the Bcast and Mask.
 
 ![Get the ip](./images/ip.png)
 
@@ -725,9 +872,9 @@ Enter yes and then your password
 
 Set a password to root by using the following command:
 
-```sudo -i```
+`sudo -i`
 
-```passwd```
+`passwd`
 
 ![set a password to root](./images/root.png)
 
@@ -735,7 +882,7 @@ Set a password to root by using the following command:
 
 Update the Ubuntu VM. Type the following command (be sure to be root):
 
-``` apt update ```
+`apt update`
 
 ![update the image](./images/Update.png)
 
@@ -743,9 +890,9 @@ Update the Ubuntu VM. Type the following command (be sure to be root):
 
 Update the network interface:
 
-``` nano /etc/network/interfaces ```
+`nano /etc/network/interfaces`
 
-Modify the primary interface (in this example ens33) by adding some static definitions
+Modify the primary interface (in this example ens33) by adding some static definitions :
 
 > auto ens33
 >
@@ -773,38 +920,25 @@ Save the file (ctrl O, enter, ctrl X )
 
 Also edit the ssh config to authorize the root login:
 
-``` nano /etc/ssh/sshd_config ```
+`nano /etc/ssh/sshd_config`
 
 ![authorize root login in ssh](./images/rootlogin.png)
 
 Save the file (ctrl O, enter, ctrl X )
 
-Edit the hosts file with this command:
-
-` nano /etc/hosts  `
-
-Change the following line:
-127.0.1.1      ubuntu
-
-to your ip address:
-
-**192.168.225.132**      ubuntu
-
-Save the file (ctrl O, enter, ctrl X )
-
 **REBOOT YOUR VM**:
 
-``` shutdown -r 0 ```
+`shutdown -r 0`
 
 After reboot, reconnect (ssh) to your VM with root credentials
 
-###  Task A22 - You are now ready
+###  Task A22 - You are now ready to start the ICP installation
 
-> You can now go back to the prerequisites for installing ICP.
+> Go to section 4.
 
 
 ---
-# End of Appendixe
+# End of Appendix
 ---
 
 <div style="background-color:black;color:white; vertical-align: middle; text-align:center;font-size:250%; padding:10px; margin-top:100px"><b>

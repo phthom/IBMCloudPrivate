@@ -10,8 +10,6 @@ IBM Cloud Private - Helm Lab
 
 ---
 
-# Helm Lab
-
 During this lab, we are going to install a helm client and configure it. Then we are going to install several sample charts to see how it works.
 
 Helm helps you manage Kubernetes applications — Helm Charts helps you define, install, and upgrade even the most complex Kubernetes application.
@@ -19,11 +17,42 @@ Helm helps you manage Kubernetes applications — Helm Charts helps you define, 
 Charts are easy to create, version, share, and publish — so start using Helm and stop the copy-and-paste madness.
 
 
-Table of Contents
+## Table of Contents
 
 ---
 
-[[toc]]
+- [Task 1: Helm Setup](#task-1--helm-setup)
+  * [1. Connect as root to the **Ubuntu VM** using SSH or Putty](#1-connect-as-root-to-the---ubuntu-vm---using-ssh-or-putty)
+  * [2. How to install helm tool ?](#2-how-to-install-helm-tool--)
+  * [3. Download the Helm client from the master](#3-download-the-helm-client-from-the-master)
+  * [4. Set an environment variable](#4-set-an-environment-variable)
+  * [5. Configure the Cluster to set up Helm](#5-configure-the-cluster-to-set-up-helm)
+  * [6. Initialize Helm](#6-initialize-helm)
+  * [7. Access to the ICP container registry](#7-access-to-the-icp-container-registry)
+- [Task 2: Installing a simple application](#task-2--installing-a-simple-application)
+  * [1. Getting a new helm repo](#1-getting-a-new-helm-repo)
+  * [2. View the available packages](#2-view-the-available-packages)
+  * [3. Install a package](#3-install-a-package)
+  * [4. List the package](#4-list-the-package)
+  * [5. Delete the package](#5-delete-the-package)
+- [Task 3: Understand the Kubernetes manifests](#task-3--understand-the-kubernetes-manifests)
+  * [1. Build the docker image for the demo](#1-build-the-docker-image-for-the-demo)
+  * [2. View the image in the console:](#2-view-the-image-in-the-console-)
+  * [3. View a kubernetes manifest](#3-view-a-kubernetes-manifest)
+- [Task 4: Define a Helm chart](#task-4--define-a-helm-chart)
+  * [1. Initialize an empty chart directory](#1-initialize-an-empty-chart-directory)
+  * [2. Look at the chart directory content.](#2-look-at-the-chart-directory-content)
+  * [3. Check the chart](#3-check-the-chart)
+- [Task 5: Using Helm](#task-5--using-helm)
+  * [1. Create a new namespace in ICP:](#1-create-a-new-namespace-in-icp-)
+  * [2. Install the chart to the training namespace](#2-install-the-chart-to-the-training-namespace)
+  * [3. List the releases](#3-list-the-releases)
+  * [4. List the deployments](#4-list-the-deployments)
+  * [5. List the services](#5-list-the-services)
+  * [6. List the pods](#6-list-the-pods)
+  * [7. Upgrade](#7-upgrade)
+- [Task 6: Defining the chart in the catalog](#task-6--defining-the-chart-in-the-catalog)
+- [Congratulations](#congratulations)
 
 ---
 
@@ -37,53 +66,46 @@ Be sure that you are connected to cluster. Use the kubectl command to check that
 
 `kubectl get nodes`
 
+If you get an error, execute the following script that we created in the installation lab :
 
-If you get an error, go back to the installation lab and copy&paste the 5 lines from the console into the console.
+`~/connect2icp.sh`
 
 
-## 2. Install helm tool
+## 2. How to install helm tool ?
 
 Helm is a client/server application : Helm client and Tiller server. 
-Before we can run any chart with helm, we should proceed to some installation and change. 
-   
-## 3. Get the certificates
+Before we can run any chart with helm, we should proceed to some installation and configuration. 
 
-Use the following command to get the certificates: 
 
-```console
-curl -sL https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
-```
-
-## 4. Download the Helm client from the master
+## 3. Download the Helm client from the master
 
 ```console
-wget https://mycluster.icp:8443//helm-api/cli/linux-amd64/helm --no-check-certificate
+docker run -e LICENSE=accept --net=host -v /usr/local/bin:/data ibmcom/icp-helm-api:1.0.0 cp /usr/src/app/public/cli/linux-amd64/helm /data
 ```
 
-This command will download the helm file to current directory.
+This command will download the helm file to /usr/local/bin directory.
 
-## 5. Copy helm to /usr/local/bin
+## 4. Set an environment variable
 
-```
-chmod +x helm
-
-mv ./helm /usr/local/bin/helm
+```console
+export HELM_HOME=/root/.helm
 ```
    
 
-## 6. Configure the Cluster to set up Helm
+## 5. Configure the Cluster to set up Helm
 
-These 2 commands will first login to ICP cluster and then it will  configure your cluster. cert.pem and key.pem certificates are added to the ~/.helm directory.
+These 2 commands will first login to ICP cluster and configure your cluster. 
+cert.pem and key.pem certificates are added to the ~/.helm directory.
 
 
 ```console
-bx pr login -a https://159.122.2.109:8443 --skip-ssl-validation
+ic pr login -a https://mycluster.icp:8443 --skip-ssl-validation
 ```
 
 Results:
 ```console
-root:[~]: bx pr login -a https://159.122.2.109:8443 --skip-ssl-validation
-API endpoint: https://159.122.2.109:8443
+root:[~]: ic pr login -a https://mycluster.icp:8443 --skip-ssl-validation
+API endpoint: https://mycluster.icp:8443
 
 Username> admin
 
@@ -94,66 +116,89 @@ OK
 Select an account:
 1. mycluster Account (id-mycluster-account)
 Enter a number> 1
-Targeted account: mycluster Account (id-mycluster-account)
+Targeted account mycluster Account (id-mycluster-account)
+
+Configuring helm and kubectl...
+Configuring kubectl: /root/.bluemix/plugins/icp/clusters/mycluster/kube-config
+Property "clusters.mycluster" unset.
+Property "users.mycluster-user" unset.
+Property "contexts.mycluster-context" unset.
+Cluster "mycluster" set.
+User "mycluster-user" set.
+Context "mycluster-context" created.
+Switched to context "mycluster-context".
+
+Cluster mycluster configured successfully.
+
+Configuring helm: /root/.helm
+Helm configured successfully
+
+OK
+
 ```
 
 
-`bx pr cluster-config mycluster`
+`ic pr cluster-config mycluster`
 
 Results:
 ```console
-root:[~]: bx pr cluster-config mycluster
+root:[~]: ic pr cluster-config mycluster
 Configuring kubectl: /root/.bluemix/plugins/icp/clusters/mycluster/kube-config
-Cluster "mycluster" set.
+Property "clusters.mycluster" unset.
+Property "users.mycluster-user" unset.
+Property "contexts.mycluster-context" unset.
 Cluster "mycluster" set.
 User "mycluster-user" set.
-Context "mycluster-context" modified.
-Context "mycluster-context" modified.
+Context "mycluster-context" created.
 Switched to context "mycluster-context".
 
-OK
 Cluster mycluster configured successfully.
+
+Configuring helm: /root/.helm
+Helm configured successfully
+
+OK
+
 ```
 
 
-## 7. Initialise Helm
+## 6. Initialize Helm
 
 `helm init --client-only`
 
 Results:
 ```console
 root:[~]: helm init --client-only
+Creating /root/.helm/repository 
+Creating /root/.helm/repository/cache 
+Creating /root/.helm/repository/local 
+Creating /root/.helm/plugins 
+Creating /root/.helm/starters 
+Creating /root/.helm/cache/archive 
+Creating /root/.helm/repository/repositories.yaml 
+Adding stable repo with URL: https://kubernetes-charts.storage.googleapis.com 
+Adding local repo with URL: http://127.0.0.1:8879/charts 
 $HELM_HOME has been configured at /root/.helm.
 Not installing Tiller due to 'client-only' flag having been set
 Happy Helming!
+
 ```
 
 After you have initialize helm client. Try the following command to see the version:
 
 `helm version --tls`
 
-> Note: some commands are using the **--tls** parameter for security (tls protocol) reason when there is an interaction between the Helm client and the Tiller server. 
+Results :
 
-If the client and the tiller versions are different then do the following :
-- upgrade tiller if its version is lower compared to the client
+```console
+# helm version --tls
+Client: &version.Version{SemVer:"v2.7.3+icp", GitCommit:"27442e4cfd324d8f82f935fe0b7b492994d4c289", GitTreeState:"dirty"}
+Server: &version.Version{SemVer:"v2.7.3+icp", GitCommit:"27442e4cfd324d8f82f935fe0b7b492994d4c289", GitTreeState:"dirty"}
 
-`helm init --upgrade`
-
-- or downgrade the tiller version instead (yes this is a "--force-upgrate" to **downgrade** tiller)
-
-`helm init --upgrade --force-upgrade`
-
-Then retry :
-`helm version --tls`
-
-You should get the following result:
 ```
-root:[Lab 2]: helm version --tls
-Client: &version.Version{SemVer:"v2.7.2+icp", GitCommit:"d41a5c2da480efc555ddca57d3972bcad3351801", GitTreeState:"dirty"}
-Server: &version.Version{SemVer:"v2.7.2", GitCommit:"8478fb4fc723885b155c924d1c8c410b7a9444e6", GitTreeState:"clean"}
-```
+> The helm Client and server should be the same version (i.e. version 2.7.3+icp)
 
-## 8. Access to the ICP container registry
+## 7. Access to the ICP container registry
 
 For the next exercise, we need to get access to the IBM Cloud Private Registry. To do so,  login to the private registry:
 
@@ -190,6 +235,8 @@ In this command, package_name is the name for the package, and package_in_repo i
 
 `helm list --tls`
 
+Results :
+
 ```
  NAME                REVISION    UPDATED                     STATUS      CHART              NAMESPACE
  my-wordpress        1           Wed Jun 28 22:15:13 2017    DEPLOYED    wordpress-0.6.5    default
@@ -199,8 +246,10 @@ In this command, package_name is the name for the package, and package_in_repo i
 
 `helm delete my-wordpress --purge --tls`
 
+Results :
+
 ```
-root:[Lab 2]: helm delete my-wordpress --purge --tls
+# helm delete my-wordpress --purge --tls
 release "my-wordpress" deleted
 ```
 
@@ -231,9 +280,9 @@ Result:
 
 ## 2. View the image in the console:
 
-	- Select **Menu > Catalog > Images**
+	- Select **Menu > Manage > Images**
 	- Click on the `default/hello-world`
-	- Check version 2 is in the Tags
+	- Check version 2 and Latest are in the Tags
 
 ![New version](./images/version.png)
 
@@ -243,7 +292,7 @@ Open the **healthcheck.yml** file
 
 `nano healthcheck.yml`
 
-- Indicates that the symbol `---` indicates a delimiter for a new resource
+- the symbol `---` indicates a delimiter for a new resource
 - Note that there are 2 resources being deployed here, a deployment and a service.
 - The metadata section defines the attributes of the resource (name, annotation, label etc), while the spec specifies the detail of the resource
 
@@ -302,7 +351,7 @@ spec:
 - The services defines the accessability of a pod. This service is of type NodePort, which exposes an internal Port (8080) into an externally accessible nodePort through the proxy node (here port 30072)
 - How does a service know which pod are associated with it?  From the selector(s) that would select all pods with the same label(s) to be load balanced.
 
-# Task 3: Define a Helm chart
+# Task 4: Define a Helm chart
 
 Now that you have understood the structure of a kubernetes manifest file, you can start working with helm chart. Basically a helm chart is a collection of manifest files that are deployed as a group. The deployment includes the ability to perform variable substitution based on a configuration file.
 
@@ -324,7 +373,9 @@ Now that you have understood the structure of a kubernetes manifest file, you ca
 
 `nano values.yaml`
 
-Look at **values.yaml** and **modify it**. Prepare to deploy **3** replicas of the nginx image. Replace the service section and choose a port (like 30073 for instance) with the following code:
+Look at **values.yaml** and **modify it**. Prepare to deploy **3** replicas of the nginx image. 
+
+Replace the service section and choose a port (like 30073 for instance) with the following code:
 
 ```console
   name: hellonginx-service
@@ -494,13 +545,13 @@ spec:
 
 Go back to the hellonginx path and check the validity of the helm chart.
 
-`cd ..`
+`cd /root/hellonginx`
 
 `helm lint`
 
 ![modify chart](images/lint.png)
 
-# Task 4: Using Helm
+# Task 5: Using Helm
 
 The helm chart that we created in the previous section that has been verified now can be deployed.
 
@@ -511,7 +562,7 @@ The helm chart that we created in the previous section that has been verified no
 - Login as `admin` with the password of `admin`
 - Go to **Menu > Manage**
 
-  - Select __Namespaces__ then click __New namespace__<br>
+- Select __Namespaces__ then click __New namespace__<br>
 ![Organization menu](images/namespaces.png)
 
   - Specify the namespace of `training` and click __Add namespace__.<br>
@@ -554,10 +605,10 @@ At the end of the answer, copy & paste the last 3 lines:
 root:[hellonginx]:   export NODE_PORT=$(kubectl get --namespace training -o jsonpath="{.spec.ports[0].nodePort}" services hellonginx)
 root:[hellonginx]:   export NODE_IP=$(kubectl get nodes --namespace training -o jsonpath="{.items[0].status.addresses[0].address}")
 root:[hellonginx]:   echo http://$NODE_IP:$NODE_PORT
-http://1192.168.225.132:30073
+http://192.168.225.132:30073
 ```
 So that you should see the url:
-`http://159.122.2.109:30073`
+`http://192.168.225.132:30073`
 
 Try this url and get the nginx hello:
 
@@ -571,7 +622,7 @@ Try this url and get the nginx hello:
 Results:
 
 ```console
-root:[hellonginx]: helm list --tls
+# helm list --tls
 NAME      	REVISION	UPDATED                 	STATUS  	CHART                	NAMESPACE
 hellonginx	1       	Thu Apr 19 23:49:47 2018	DEPLOYED	hellonginx-0.1.0     	training 
 my-release	1       	Tue Apr 17 20:08:44 2018	DEPLOYED	ibm-jenkins-dev-1.0.0	default  
@@ -583,7 +634,7 @@ my-release	1       	Tue Apr 17 20:08:44 2018	DEPLOYED	ibm-jenkins-dev-1.0.0	defa
 `kubectl get deployments --namespace=training`
 
 ```console
-root:[hellonginx]: kubectl get deployments --namespace=training
+# kubectl get deployments --namespace=training
 NAME         DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
 hellonginx   1         1         1            1           9m
 ```
@@ -593,7 +644,7 @@ hellonginx   1         1         1            1           9m
 `kubectl get services --namespace=training`
 
 ```console
-root:[hellonginx]: kubectl get services --namespace=training
+# kubectl get services --namespace=training
 NAME         TYPE       CLUSTER-IP   EXTERNAL-IP   PORT(S)        AGE
 hellonginx   NodePort   10.0.0.131   <none>        80:30073/TCP   10m
 ```
@@ -645,7 +696,7 @@ NOTES:
 ```
 
 
-# Task 5: Defining the chart in the catalog
+# Task 6: Defining the chart in the catalog
 
 A good idea is to define the chart in the catalog.
 
@@ -663,34 +714,33 @@ Successfully packaged chart and saved it to: /root/hellonginx-0.1.0.tgz
 
 **Login**to the master:
 
-`bx pr login -a https://159.122.2.109:8443 --skip-ssl-validation`
+`ic pr login -a https://mycluster.icp:8443 --skip-ssl-validation`
 
 Then, use the "bx pr" command to load the chart:
 
-`bx pr load-helm-chart --archive /root/hellonginx-0.1.0.tgz`
+`ic pr load-helm-chart --archive /root/hellonginx-0.1.0.tgz`
 
 **Results**
 ```console
-root:[~]: bx pr load-helm-chart --archive /root/hellonginx-0.1.0.tgz
+#  ic pr load-helm-chart --archive /root/hellonginx-0.1.0.tgz
 Loading helm chart
-  {"url":"https://icp-management-ingress:8443/helm-repo/charts/index.yaml"}
-OK
+Loaded helm chart
 
 Synch charts
-  {"message":"synch started"}
+Synch started
 OK
 ```
 
 
 Leave the terminal and login to the ICP console with admin/admin :
 
-- Select __Menu > Catalog__
+- Select **Catalog** on the top right side of the ICP console
 
 - Find the `hellonginx` chart from AppCenter
 
 ![search hello](images/hellonginx2.png)
 
-- Click on the `hello` chart to get access to configuration.
+- Click on the `hellonginx` chart to get access to configuration.
 
 ![hello chart](images/hellonginx3.png)
 
@@ -704,7 +754,7 @@ Of course, you can customize the README.MD and add an icon to make the chart mor
 
 # Congratulations
 
-You successfully create and manage charts to deploy applications on the IBM Cloud Private. 
+You successfully created and managed charts to deploy applications on the IBM Cloud Private. 
 
 
 ---

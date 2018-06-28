@@ -20,7 +20,15 @@ Microservice Builder will guide you thru the tree creation of complete project i
 
 ---
 
-[[toc]]
+- [Cloud-Native Microservice Builder Lab](#cloud-native-microservice-builder-lab)
+- [Task 1: Access the IBM Cloud Private console](#task-1--access-the-ibm-cloud-private-console)
+- [Task 2: Use the Microservice Builder](#task-2--use-the-microservice-builder)
+  * [1. Create your project](#1-create-your-project)
+  * [2. Build your project](#2-build-your-project)
+  * [3. Push the container](#3-push-the-container)
+- [Task 3: Install the application](#task-3--install-the-application)
+- [Congratulations](#congratulations)
+
 
 ---
  
@@ -32,28 +40,28 @@ Microservice Builder will guide you thru the tree creation of complete project i
 
 From a machine that is hosting your environment, open a web browser and go to one of the following URLs to access the IBM Cloud Private management console:
   - Open a browser
-  - go to https://192.168.225.132:8443 or type another IP@ given by your instructor
+  - go to https://mycluster.icp:8443 
   - Login to ICP console with admin / admin
 
 ![Login to ICP console](./images/login2icp.png)
 
 On the terminal, connect on the Ubuntu VM using SSH or Putty.
 
-Check the the bx dev command is working:
+Check the the ic dev command is working:
 
-`bx dev`
+`ic dev`
 
 **Results**
 ```console
-root:[abraca]: bx dev
+# ic dev
 NAME:
-   bx dev - A CLI plugin to create, manage, and run projects on IBM Cloud
+   ic dev - A CLI plugin to create, manage, and run projects on IBM Cloud
 
 USAGE:
-   bx dev command [arguments...] [command options]
+   ic dev command [arguments...] [command options]
 
 VERSION:
-   1.2.1
+   1.3.3
 
 COMMANDS:
    build             Build the project in a local container
@@ -75,7 +83,7 @@ COMMANDS:
    help              Show help
 ```
 
-If this command doesn't show that screen, then go to the end of the ICP Installation Lab and install that command. 
+If this command doesn't show, then go to the end of the ICP Installation Lab and install that command. 
 
 
 # Task 2: Use the Microservice Builder
@@ -85,11 +93,11 @@ Application workloads can be deployed to run on an IBM Cloud Private cluster. Th
 
 ## 1. Create your project 
 
-`bx dev create`
+`ic dev create`
 
 Follow the instructions:
 
-Log in to IBM Cloud using the bx login command to synchronize your projects with the IBM Cloud dashboard, and to enable the use of IBM Cloud services in your project. 
+Log in to IBM Cloud using the ic login command to synchronize your projects with the IBM Cloud dashboard, and to enable the use of IBM Cloud services in your project. 
 ? Do you wish to continue without logging in? [y/n]> **y**
 ? Select a resource type:                  
 1. Backend Service / Web App
@@ -108,36 +116,62 @@ Enter a number> **3**
 ? Select a Starter Kit or select the last option for more information:
 1. Backend for Frontend - Express.js Backend
 2. Microservice - Express.js Microservice
-3. Web App - Express.js Basic
-4. Web App - Express.js React
-5. Web App - MongoDb + Express + Angular + Node
-6. Web App - MongoDb + Express + React + Node
-7. Show more details
-Enter a number> **3**
+3. Web App - Create Project
+4. Web App - Express.js Basic
+5. Web App - Express.js React
+6. Web App - MongoDb + Express + Angular + Node
+7. Web App - MongoDb + Express + React + Node
+8. Show more details
+Enter a number> **4**
 
 
 ? Enter a name for your project> **abraca**     
                                   
 The project, abraca, has been successfully saved into the current directory.
 
-Visualize your project. You can notice that every thing has been created for you.
+Visualize your project. You can notice  that files and directories have been created for you.
 
 ```console
-root:[~]: ls abraca/
+# ls abraca
 chart           Dockerfile        Jenkinsfile  manifest.yml  public     run-debug  server
 cli-config.yml  Dockerfile-tools  LICENSE      package.json  README.md  run-dev    test
 root:[~]: 
 ```
+
+You can notice that a lot of things have been created for you like :
+- **Dockerfile** for dockerization of the application
+- Dockerfile-tools 
+- **Jenkinsfile** to help deploying the application with Jenkins
+- a **manifest.yml** file for deploying in Cloud Foundry
+- a server directory containing the application (**server.js**)
+- helm charts
+- debugging options
+- lot of predefined directories, files and codes in the application
+
+Have a look at the following peace of code :
+
+`nano /root/abraca/server/server.js` 
+
+![appmetrics](./images/appmetrics.png)
+
+In that node.js program, you can also notice that we already have predefined libraries and codes :
+- appmetrics (metrics collection)
+- log4js
+- express 
+- logger
+
+
+
 ## 2. Build your project
 
 `cd abraca`
 
-`bx dev build`
+`ic dev build`
 
 **Results**
 ```console
-root:[~]: cd abraca/
-root:[abraca]: bx dev build
+# cd abraca/
+# ic dev build
 Creating image abraca-express-tools based on Dockerfile-tools...
 OK                    
 Creating a container named 'abraca-express-tools' from that image...
@@ -150,103 +184,126 @@ Stopping the 'abraca-express-tools' container...
 OK
 ```
 
-A new container (abraca-express-tools) has been created for you.
+A new container (abraca-express-tools) has been created.
 
+`docker images abraca-express-tools`
+
+Results:
 ```console
-root:[abraca]: docker images abraca-express-tools
+# docker images abraca-express-tools
 REPOSITORY             TAG                 IMAGE ID            CREATED             SIZE
 abraca-express-tools   latest              e3072a821f87        3 minutes ago       483MB
 ```
 
-## 3. Push the container
+## 3. Modify your project to access ICP
 
-Before pushing, you must tab the container with the namspace and the proper information:
-
-```console
- docker tag abraca-express-tools:latest mycluster.icp:8500/default/abraca:latest
-```
-
-**Results**
-```console
-root:[abraca]: docker images mycluster.icp:8500/default/abraca:latest
-REPOSITORY                          TAG                 IMAGE ID            CREATED             SIZE
-mycluster.icp:8500/default/abraca   latest              e3072a821f87        8 minutes ago       483MB
-```
-
-Then login to the container registry
+Login to the container registry in the cluster
 `docker login mycluster.icp:8500`
 
 **Results**
 ```console
-root:[abraca]: docker login mycluster.icp:8500
+# docker login mycluster.icp:8500
 Username (admin): admin
 Password: 
 Login Succeeded
 ```
 
+Next, you’ll configure the service account in IBM Cloud Private with the image pull secret.  This enables Kubernetes to pull images from the private registry.  
+
+This technique uses jq, which has been installed using apt (Ubuntu Linux) in the Installation Lab.
+
+Type the following command to configure your serviceaccounts :
+```
+kubectl get serviceaccounts default -o json |
+jq  'del(.metadata.resourceVersion)'|
+jq 'setpath(["imagePullSecrets"];[{"name":"admin.registrykey"}])' |
+kubectl replace serviceaccount default -f -
+```
+
+Where “admin” is your user account associated with the namespace to which you will be deploying, and that you have used to login to IBM Cloud Private, previously.  Upon completion of jq, you will see an entry for the serviceaccount is noted as “replaced.”
+
+For the simplest deploy experience, you can update your application’s cli-config.yml file to point to the IBM Cloud Private Kubernetes environment by adding these entries:
+
+deploy-target: "container"
+deploy-image-target: "mycluster.icp:8500/<Namespace>/<App-Name>"
+
+The  <Namespace> is the namespace on IBM Cloud Private to which you are deploying, for example default. <App-Name> is the name of your application deployment.
+
+In that case, we are going to edit the cli-config.yml :
+
+`nano cli-config.yml`
+
+Go the end of the file and **add** the following 2 lines :
+
+```
+deploy-target: "container"
+deploy-image-target: "mycluster.icp:8500/default/abraca"
+```
+Save your file (ctrl+O, Enter, Crtl+X)
+
+
 # Task 3: Install the application
 
-Use Helm command to install the new created application :
+You’re now ready to deploy your Kubernetes application to the IBM Cloud Private environment.  In this case, the deploy command will :
 
-```console
-helm install --name abraca --set image.repository=mycluster.icp:8500/default/abraca,image.tag=latest . --tls
+`cd /root/abraca/`
+
+
+`ic dev deploy`
+
+Results :
+
+```
+# ic dev deploy
+Tag the Run image to the Docker registry as mycluster.icp:8500/default/abraca:0.0.1
+Unable to tag the image abraca-express-run, will now attempt to build and tag it
+OK
+Push the Run image to the Docker registry
+OK                   
+Execute 'helm upgrade --tls'
+OK
+Pods:
+
+NAME                                 READY     STATUS              RESTARTS   AGE
+abraca-deployment-7fbf5d487d-btmf6   0/1       ContainerCreating   0          0s
+
+Deployments:
+
+NAME                DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+abraca-deployment   1         1         1            0           0s
+
+Services:
+
+NAME                  TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)          AGE
+abraca-service        NodePort    10.0.0.236   <none>        3000:31245/TCP   1s
+
+
+Nodes:
+
+NAME              STATUS    ROLES     AGE       VERSION
+159.122.190.251   Ready     <none>    1d        v1.10.0+icp
+
+Untag the Run image from the Docker registry
+OK
+Your app is hosted at http://159.122.190.252:31245/
 ```
 
-**Results**
-```console
-LAST DEPLOYED: Tue Apr 17 21:51:29 2018
-NAMESPACE: default
-STATUS: DEPLOYED
 
-RESOURCES:
-==> v1/Service
-NAME            TYPE      CLUSTER-IP  EXTERNAL-IP  PORT(S)         AGE
-abraca-service  NodePort  10.0.0.236  <none>       3000:31621/TCP  0s
-
-==> v1beta1/Deployment
-NAME               DESIRED  CURRENT  UP-TO-DATE  AVAILABLE  AGE
-abraca-deployment  1        1        1           0          0s
-
-==> v1/Pod(related)
-NAME                                READY  STATUS             RESTARTS  AGE
-abraca-deployment-6b8cb9f6c4-qngt6  0/1    ContainerCreating  0         0s
-```
-
-List the corresponding service in kubernetes:
-
-`kubectl describe service abraca-service``
-
-**Results**
-```console
-root:[abraca]: kubectl describe service abraca-service
-Name:                     abraca-service
-Namespace:                default
-Labels:                   chart=abraca-1.0.0
-Annotations:              prometheus.io/scrape=true
-Selector:                 app=abraca-selector
-Type:                     NodePort
-IP:                       10.0.0.236
-Port:                     http  3000/TCP
-TargetPort:               3000/TCP
-NodePort:                 http  31621/TCP
-Endpoints:                
-Session Affinity:         None
-External Traffic Policy:  Cluster
-Events:                   <none>
-```
-Locate the NodePort : 31621.
+This deploy command build and upload the Docker image of your application to the IBM Cloud Private image repository
+This performs a deployment to your IBM Cloud Private Kubernetes cluster using the Helm chart that was generated by the **ic dev create** or **ic dev enable** command.
+…and now you have generated and deployed your first application to IBM Cloud Private using the IBM Cloud Developer Tools CLI.
 
 Go the ICP management console and check the Helm Release and all the Kubernetes components. 
 
-Try the URL : `http://mycluster.icp:31621`
+Try the URL : `http://ipaddress:31245` from a browser.
+
+![congratulations](./images/congratulations.png)
+
+
 
 # Congratulations 
 
 You have successfully created and installed a microservice application with Microservice Builder.
-
-> Note: you can delete the helm release with the following command :
-
-`helm delete abraca --purge --tls`
 
 
 ----

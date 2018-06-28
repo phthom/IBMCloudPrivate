@@ -4,10 +4,38 @@ IBM Cloud Private - Kubernetes Lab
  </b></a></div>
 
 
-![kube2](images/kube2.png)
------------------------------
+![kube](images/kube2.png)
 
-# Lab 1 : Deploying Apps with Kubernetes
+### Table of Contents
+
+---
+
+- [Task 1 : Deploying Apps with Kubernetes](#task-1---deploying-apps-with-kubernetes)
+    + [1. Login to Ubuntu VM as **root** using SSH or Putty.](#1-login-to-ubuntu-vm-as---root---using-ssh-or-putty)
+    + [2.Modify your hosts file on your laptop](#2modify-your-hosts-file-on-your-laptop)
+    + [3. Download a GIT repo for this exercise](#3-download-a-git-repo-for-this-exercise)
+    + [4. Build a Docker image](#4-build-a-docker-image)
+    + [6. Log in to the cluster and push the image to the registry.](#6-log-in-to-the-cluster-and-push-the-image-to-the-registry)
+    + [7. View your image in the console](#7-view-your-image-in-the-console)
+    + [8. Run your first deployment](#8-run-your-first-deployment)
+    + [9. Expose your first service](#9-expose-your-first-service)
+    + [10. Identify the NodePort](#10-identify-the-nodeport)
+    + [11. the NodePort number is `30246`.](#11-the-nodeport-number-is--30246-)
+    + [12. Cluster resources](#12-cluster-resources)
+- [Task 2 : Scaling Apps with Kubernetes](#task-2---scaling-apps-with-kubernetes)
+    + [1. Clean up the current deployment](#1-clean-up-the-current-deployment)
+    + [2. Run a clean deployment](#2-run-a-clean-deployment)
+    + [3. Scale the application](#3-scale-the-application)
+    + [4. Rollout an update to  the application](#4-rollout-an-update-to--the-application)
+    + [5. Check the health of apps](#5-check-the-health-of-apps)
+    + [End of the lab](#end-of-the-lab)
+
+
+---
+
+
+
+# Task 1 : Deploying Apps with Kubernetes
 
 
 
@@ -17,19 +45,19 @@ Also test your connectivity to the cluster with this command:
 
  `kubectl get nodes`
 
-If you get an error message like "error: You must be logged in to the server (Unauthorized)", then you must copy and past the 5 lines (see the first lab on installation).
+If you get an error, execute the following script that we created in the installation lab :
+
+`~/connect2icp.sh`
 
 
-### 2. Look at your /etc/hosts so that you can resolve the master node
+### 2.Modify your hosts file on your laptop
 
-On your machine (your laptop or your desktop), modify your /etc/hosts so that you can access the master:
-
-  `nano /etc/hosts`
+On your machine (your laptop or your desktop), modify your **hosts** file so that you can access the master:
     
+Edit the hosts file and add the following line at the end (replace the ipaddress with yours) :    
 ```
     ...     
-    192.168.225.132	mycluster.icp
-    ...
+    111.222.333.444	mycluster.icp
 ```
     
 
@@ -40,19 +68,7 @@ On your machine (your laptop or your desktop), modify your /etc/hosts so that yo
 ![git](images/git.png)
 
 
-
-### 4. You can now issue `kubectl` commands to discover and manage your cluster. For instance, discover the nodes in the cluster.
-
-`kubectl get nodes`
-
-```
-    
-    NAME       STATUS    AGE       VERSION
-    10.0.0.1   Ready     1d        v1.9.1-11+f747daa02c9ffb
-    ...
- ```
-
-### 5. Build a Docker image that includes the app files of the Lab 1 directory. If you need to make a change to the app in the future, repeat these steps to create another version of the image.
+### 4. Build a Docker image 
 
 Build the image locally and tag it with the name that you want to use on the IBM Cloud Private kubernetes cluster. The tag includes the namespace name of `default` in the cluster. The tag also targets the master node of the cluster, which manages the job of placing it on one or more worker nodes. This is because of the alias you created in the previous step, with the cluster name linked to the master node name. The communications with the master node happen on port 8500. Tagging the image this way tells Docker where to push the image in a later step. Use lowercase alphanumeric characters or underscores only in the image name. Don't forget the period (.) at the end of the command. The period tells Docker to look inside the current directory for the Dockerfile and build artifacts to build the image.
 
@@ -79,21 +95,29 @@ Log in as user `admin` with password `admin`.
 ![docker login and push](images/dockerpush.png)
 
 
-### 7. Open a browser to https://mycluster.icp:8443. 
+### 7. View your image in the console
 
-Change the ip address depending on you hosts file. Create a security exception in your browser for this location and if necessary, click on the `Advanced` link and follow the prompts. Log in as user `admin` with password `admin`. View your image using `Menu > Catalog > Images`.
+Open a browser to https://mycluster.icp:8443. 
+
+Change the ip address depending on you hosts file. Create a security exception in your browser for this location and if necessary, click on the `Advanced` link and follow the prompts. Log in as user `admin` with password `admin`. 
+
+View your image using `Menu > Manage > Images`.
 
 ![image list](images/imagelist.png)
 
 
-### 8. Use your image to create a kubernetes deployment with the following command.
+### 8. Run your first deployment
+
+Use your image to create a kubernetes deployment with the following command.
 
 `kubectl run hello-world-deployment --image=mycluster.icp:8500/default/hello-world`
   
 ![deploy](images/deploy.png)
 
 
-### 9. Create a service to access your running container using the following command.
+### 9. Expose your first service
+
+Create a service to access your running container using the following command.
 
 `kubectl expose deployment/hello-world-deployment --type=NodePort --port=8080 --name=hello-world-service --target-port=8080`
  
@@ -102,7 +126,9 @@ Your output should be:
 
 ![expose service](images/service.png)
 
-### 10. With the NodePort type of service, the kubernetes cluster creates a 5-digit port number to access the running container on through the service. 
+### 10. Identify the NodePort
+
+With the NodePort type of service, the kubernetes cluster creates a 5-digit port number to access the running container on through the service. 
 
 The service is accessed through the IP address of the proxy node on the NodePort port number. To discover the NodePort number that has been assigned, use the following command.
 
@@ -113,14 +139,16 @@ The service is accessed through the IP address of the proxy node on the NodePort
  ![Describe](images/describe.png)
 
 
-### 11. In this example, the NodePort number is `30246`. 
+### 11. the NodePort number is `30246`. 
 
-Yours may be different. Open a Firefox browser window or tab and go to the URL of your master node with your NodePort number, such as `http://192.168.225.132:30246`. Your output should look like this.
+Yours may be different. Open a Firefox browser window or tab and go to the URL of your master node with your NodePort number, such as `http://mycluster.icp:30246`. Your output should look like this.
 
  ![Helloworld](images/browser1.png)
  
 
-### 12. You can view much of the information on your cluster resources visually through the IBM Cloud Private console, similar to information you might have viewed in the Kubernetes Dashboard. That is the subject of our next demo. As an alternative, you can obtain text-based information on all the resources running in your cluster using the following command.
+### 12. Cluster resources
+
+You can view much of the information on your cluster resources visually through the IBM Cloud Private console, similar to information you might have viewed in the Kubernetes Dashboard. That is the subject of our next demo. As an alternative, you can obtain text-based information on all the resources running in your cluster using the following command.
 
 `kubectl describe all`
  
@@ -130,7 +158,7 @@ Yours may be different. Open a Firefox browser window or tab and go to the URL o
 Congratulations! You have deployed your first app to the IBM Cloud Private kubernetes cluster.
 
 
-# Lab 2 : Scaling Apps with Kubernetes
+# Task 2 : Scaling Apps with Kubernetes
 
 In this lab, understand how to update the number of replicas a deployment has and how to safely roll out an update on Kubernetes. Learn, also, how to perform a simple health check.
 
@@ -288,8 +316,9 @@ Create a new service:
 
 `kubectl expose deployment/hello-world --type=NodePort --port=8080 --name=hello-world-service --target-port=8080`
 
+Take a note of the NodePort in the description. The NodePord is working against the public IP address of the worker node (in this case this is our unique **ipaddress**)
 
-Perform a curl <public-IP>:<nodeport> to confirm your new code is active.
+Perform a curl http://<public-IP>:<nodeport> to confirm your new code is active or open a browser and 
 
 ![New Application up and running](./images/NewApp.png)
 
@@ -299,7 +328,7 @@ Kubernetes uses availability checks (**liveness probes**) to know when to restar
 
 Also, Kubernetes uses readiness checks to know when a container is ready to start accepting traffic. A pod is considered ready when all of its containers are ready. One use of this check is to control which pods are used as backends for services. When a pod is not ready, it is removed from load balancers.
 
-In this example, we have defined a HTTP liveness probe to check health of the container every five seconds. For the first 10-15 seconds the /healthz returns a 200 response and will fail afterward. Kubernetes will automatically restart the service.
+In this example, we have defined a HTTP liveness probe to check health of the container every five seconds. For the first 60 seconds, the /healthz returns a 200 response and will fail afterward. Kubernetes will automatically restart the service.
 
 Open the **healthcheck.yml** file with a text editor. 
 
@@ -309,7 +338,9 @@ This configuration script combines a few steps from the previous lesson to creat
 
 Update the details for the image in your private registry namespace:
 
-image: "mycluster.icp:8500/default/hello-world:2"
+`image: "mycluster.icp:8500/default/hello-world:2"`
+
+> Don't use any tab when changing that line
 
 > Note the HTTP liveness probe that checks the health of the container every five seconds.
 
@@ -335,7 +366,7 @@ Open a browser and check out the app. To form the URL, combine the IP with the N
 
 In a browser, you'll see a success message. If you do not see this text, don't worry. This app is designed to go up and down.
 
-For the first 10 - 15 seconds, a 200 message is returned, so you know that the app is running successfully. After those 15 seconds, a timeout message is displayed, as is designed in the app.
+For the first minute, a 200 message is returned, so you know that the app is running successfully. After those 60 seconds or so, a timeout message is displayed, as is designed in the app.
 
 Launch your ICP dashboard:
 
@@ -343,12 +374,11 @@ In the Workloads tab, you can see the resources that you created. From this tab,
 
 Ready to delete what you created before you continue? This time, you can use the same configuration script to delete both of the resources you created.
 
-kubectl delete -f healthcheck.yml
+`kubectl delete -f healthcheck.yml`
 
 When you are done exploring the Kubernetes dashboard, in your CLI, enter CTRL+C to exit the proxy command.
 
-Congratulations! You deployed the second version of the app. You had to use fewer commands, learned how health check works, and edited a deployment, which is great! Lab 2 is now complete.
-
+Congratulations! You deployed the second version of the app. You had to use fewer commands, learned how health check works, and edited a deployment, which is great! 
 
 
 ### End of the lab
@@ -360,4 +390,3 @@ IBM Cloud Private - Kubernetes Lab
  </b></a></div>
 
 ---
-‚
