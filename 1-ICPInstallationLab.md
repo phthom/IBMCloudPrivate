@@ -616,7 +616,7 @@ Finally also add the 'ic dev' plugin to successfully use the **Microservice Buil
 
 `ic plugin install dev -r Bluemix`
 
-![Adding the bx dev plugin](./images/bx dev.png)
+![Adding the bx dev plugin](./images/bxdev.png)
 
 ### Task 9: Adding persistent storage to Kubernetes
 
