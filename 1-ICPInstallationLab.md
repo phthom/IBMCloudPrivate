@@ -12,7 +12,7 @@
 
 ![ICP Logo](./images/logoicp.png)
 
-+++
+
 
 # Table of Content
 
@@ -60,10 +60,15 @@
     + [Task A20  - Update the OS](#task-a20----update-the-os)
     + [Task A21 - Define the network interface](#task-a21---define-the-network-interface)
     + [Task A22 - You are now ready to start the ICP installation](#task-a22---you-are-now-ready-to-start-the-icp-installation)
+- [appendix B : Changing ICP admin password](#appendix-b---changing-icp-admin-password)
+    + [Task B1 - Login to your ICP cluster using ssh](#task-b1---login-to-your-icp-cluster-using-ssh)
+    + [Task B2 - Generate your new ICP password in base64](#task-b2---generate-your-new-icp-password-in-base64)
+    + [Task B3 - Edit ICP secrets](#task-b3---edit-icp-secrets)
+    + [Task B4 - Delete the auth pods](#task-b4---delete-the-auth-pods)
+    + [Task B5 - Test the new password](#task-b5---test-the-new-password)
 - [End of Appendix](#end-of-appendix)
 
 
-+++
 
 # 1. IBM Cloud Private Overview
 
@@ -982,7 +987,7 @@ Locate the **admin-password** and change the existing encrypted password with th
 Don't change anything else in the file. 
 Save your work : **escape  :wq!**
 
-###  Task B3 - Delete the auth pods
+###  Task B4 - Delete the auth pods
 
 `kubectl -n kube-system delete pods -l k8s-app=auth-idp`
 
@@ -994,7 +999,7 @@ Results :
 pod "auth-idp-sv8gv" deleted
 ```
 
-###  Task B4 - Test the new password
+###  Task B5 - Test the new password
 
 Wait until the auth pods have been restarted
 
