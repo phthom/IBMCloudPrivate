@@ -240,7 +240,7 @@ Use the following 2 commands to **update** the system with some complementary pa
 
 ```console
 apt update
-apt-get install apt-transport-https ca-certificates curl software-properties-common python-minimal
+apt-get install apt-transport-https ca-certificates curl software-properties-common python-minimal jq
 ```
 
 Check carefully the output to see if you have errors and especially if you cannot connect.
