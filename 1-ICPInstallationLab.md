@@ -977,7 +977,7 @@ error: You must be logged in to the server (Unauthorized)
 Results :
 ![vi secrets](./images/visecrets.png)
 
-This command opens up the **vi** text editor of Linux on the secrets file. 
+This command opens up the **vi** text editor on the secrets file. 
 Locate the **admin-password** and change the existing encrypted password with the one that you generated. 
 Don't change anything else in the file. 
 Save your work : **escape  :wq!**
@@ -1016,7 +1016,11 @@ Then test the new password :
 `nano ./connect2icp.sh`
 
 Change the 4th line PASSWD with your new password. 
+
+
 ![new password](./images/newpassword.png)
+
+
 
 Save the file (Ctrl+o, Enter, Crtl+x)
 
