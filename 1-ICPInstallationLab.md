@@ -432,7 +432,7 @@ Click on Configure client:
 
 ![Configure Client](./images/ClientSetup.png)
 
-This 5 lines contain a token that change every 4 hours. So then, you generally have to use these 5 commands to get connected  
+This 5 lines contain a token that change every 12 hours. So then, you generally have to use these 5 commands to get connected  
 
 Go back to the ssh or putty terminal :
 
@@ -446,9 +446,10 @@ Copy the following code (inspired from the 5 lines) :
 CLUSTERNAME=mycluster
 ACCESS_IP=`curl ifconfig.co`
 USERNAME=admin
-PASSWD=admin
+PASSWD='candle1!'
 
-token=$(curl -s -k -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" -d "grant_type=password&username=$USERNAME&password=$PASSWD&scope=openid" https://$ACCESS_IP:8443/idprovider/v1/aut$
+token=$(curl -s -k -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" -d "grant_type=password&username=$USERNAME&password=$PASSWD&scope=openid" https://$ACCESS_IP:8443/idprovider/
+v1/auth/identitytoken --insecure | jq .id_token | awk  -F '"' '{print $2}')
 
 kubectl config set-cluster $CLUSTERNAME.icp --server=https://$ACCESS_IP:8001 --insecure-skip-tls-verify=true
 kubectl config set-context $CLUSTERNAME.icp-context --cluster=$CLUSTERNAME.icp
@@ -514,7 +515,7 @@ To do so, from the ssh terminal, type the following commands:
  
 `nano .bashrc`
 
-At the end of the file, add the 2 lines:
+At the end of the file, add the 3 lines:
 
 ```console
 alias k='kubectl'
@@ -534,7 +535,7 @@ Finally, you can also install the **ic** command (former bx command) :
 
 `curl -fsSL https://clis.ng.bluemix.net/install/linux | sh`
 
-![bx CLI](./images/bx CLI.png)
+![bx CLI](./images/bxCLI.png)
 
 the **ic** command is a generic command for all the IBM Cloud (private and public). The former name bx comes from Bluemix. You can also use **ibmcloud** instead of ic or bx.
 
