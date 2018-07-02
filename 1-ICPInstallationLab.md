@@ -446,7 +446,7 @@ Copy the following code (inspired from the 5 lines) :
 CLUSTERNAME=mycluster
 ACCESS_IP=`curl ifconfig.co`
 USERNAME=admin
-PASSWD='candle1!'
+PASSWD=admin
 
 token=$(curl -s -k -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" -d "grant_type=password&username=$USERNAME&password=$PASSWD&scope=openid" https://$ACCESS_IP:8443/idprovider/
 v1/auth/identitytoken --insecure | jq .id_token | awk  -F '"' '{print $2}')
