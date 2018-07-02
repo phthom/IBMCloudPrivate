@@ -938,6 +938,108 @@ After reboot, reconnect (ssh) to your VM with root credentials
 > Go to section 4.
 
 
+#  appendix B : Changing ICP admin password
+
+This tutorial describes how to change the admin password. 
+
+> ATTENTION : This procedure could be dangerous - Knowing **vi** is a prerequisite.
+
+###  Task B1 - Login to your ICP cluster using ssh
+
+`ssh root@ipaddress`
+
+###  Task B2 - Generate your new ICP password in base64
+
+`echo -n "MyNewPassword"| base64`
+
+Results :
+ ```console
+ # echo -n "MyNewPassword"| base64
+TXlOZXdQYXNzd29yZA==
+ ```
+> Attention choose a very specific password to your ICP (containing capital letters and numbers and special characters ...)
+> **Take a note of the  encrypted password**
+
+###  Task B3 - Edit ICP secrets
+
+`kubectl -n kube-system edit secrets platform-auth-idp-credentials` 
+
+Results :
+```console
+# kubectl -n kube-system edit secrets platform-auth-idp-credentials
+error: You must be logged in to the server (Unauthorized)
+```
+
+> If you see that message then use the ./connect2ICP.sh to reconnect to the cluster. 
+
+`kubectl -n kube-system edit secrets platform-auth-idp-credentials` 
+
+Results :
+![vi secrets](./images/visecrets.png)
+
+This command opens up the **vi** text editor of Linux on the secrets file. 
+Locate the **admin-password** and change the existing encrypted password with the one that you generated. 
+Don't change anything else in the file. 
+Save your work : **escape  :wq!**
+
+###  Task B3 - Delete the auth pods
+
+`kubectl -n kube-system delete pods -l k8s-app=auth-idp`
+
+
+Results :
+
+```console
+# kubectl -n kube-system delete pods -l k8s-app=auth-idp
+pod "auth-idp-sv8gv" deleted
+```
+
+###  Task B4 - Test the new password
+
+Wait until the auth pods have been restarted
+
+`kubectl -n kube-system get pods -l k8s-app=auth-idp`
+
+Results :
+
+```console 
+# kubectl -n kube-system get pods -l k8s-app=auth-idp
+NAME             READY     STATUS    RESTARTS   AGE
+auth-idp-swgrc   3/3       Running   0          46s
+```
+Then test the new password : 
+
+**First test : go to the ICP console http://ipaddress:8443 and log in with your new password. If it works, modify also connect2icp.sh script**
+
+`cd`
+
+`nano ./connect2icp.sh`
+
+Change the 4th line PASSWD with your new password. 
+![new password](./images/newpassword.png)
+
+Save the file (Ctrl+o, Enter, Crtl+x)
+
+Execute the command :
+
+`./connect2icp.sh`
+
+Results:
+```console
+# ./connect2icp.sh
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100    16  100    16    0     0     69      0 --:--:-- --:--:-- --:--:--    69
+Cluster "mycluster.icp" set.
+Context "mycluster.icp-context" modified.
+User "admin" set.
+Context "mycluster.icp-context" modified.
+Switched to context "mycluster.icp-context".
+```
+
+
+
+
 ---
 # End of Appendix
 ---
