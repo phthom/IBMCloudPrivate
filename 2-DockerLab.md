@@ -10,6 +10,30 @@ IBM Cloud Private - Docker Lab
 
 # Docker Lab
 
+## Table of Contents
+
+- [Docker Lab](#docker-lab)
+  * [Prerequisites](#prerequisites)
+  * [Lab1 - Working with Docker](#lab1---working-with-docker)
+    + [1. Launch a shell and confirm that docker is installed.](#1-launch-a-shell-and-confirm-that-docker-is-installed)
+    + [2. As with all new computer things, it is obligatory that we start with "hello-world"](#2-as-with-all-new-computer-things--it-is-obligatory-that-we-start-with--hello-world-)
+    + [3. Rerun "hello-world" Notice that the image is not pulled down again. It already exists locally, so it is run.](#3-rerun--hello-world--notice-that-the-image-is-not-pulled-down-again-it-already-exists-locally--so-it-is-run)
+    + [4.  `docker images` will show us that image.](#4---docker-images--will-show-us-that-image)
+    + [5. From where was the `hello-world` image pulled?](#5-from-where-was-the--hello-world--image-pulled-)
+    + [6. This image is atypical; when an image is run it usually continues to run.](#6-this-image-is-atypical--when-an-image-is-run-it-usually-continues-to-run)
+    + [7. Here's how you would see the running container.](#7-here-s-how-you-would-see-the-running-container)
+    + [8. An image can be run multiple times. Launch another container for the couchdb image.](#8-an-image-can-be-run-multiple-times-launch-another-container-for-the-couchdb-image)
+    + [9. Now we have two containers running the couchdb database.](#9-now-we-have-two-containers-running-the-couchdb-database)
+    + [10. The containers look similar, but they have unique names and unique ids.](#10-the-containers-look-similar--but-they-have-unique-names-and-unique-ids)
+    + [11. Stop the other container and see what is running.](#11-stop-the-other-container-and-see-what-is-running)
+    + [12. Notice the image still exists.](#12-notice-the-image-still-exists)
+    + [13. Did you forget about the hello-world image?](#13-did-you-forget-about-the-hello-world-image-)
+    + [14. Oops, we can't delete that image until we delete the "couchdb" container.](#14-oops--we-can-t-delete-that-image-until-we-delete-the--couchdb--container)
+    + [15. Delete the couchdb container, delete the couchdb image, and make sure it is gone. You can leave hello-world.](#15-delete-the-couchdb-container--delete-the-couchdb-image--and-make-sure-it-is-gone-you-can-leave-hello-world)
+  * [Lab 2: Building Docker Images](#lab-2--building-docker-images)
+    + [1. Our First Dockerfile](#1-our-first-dockerfile)
+  * [Conclusion](#conclusion)
+    + [End of the lab](#end-of-the-lab)
 
 ## Prerequisites
 This set of instructions requires that docker is already installed and docker commands can be run from a bash shell. You can get more information at the [Docker website](https://www.docker.com/get-docker)
@@ -318,17 +342,45 @@ EXPOSE 80
 
 Here, what we are building is an image that will run the nginx proxy server for us. Look at the set of instructions and it should be pretty clear. After the standard FROM and MAINTAINER instructions, we are executing a couple of RUN instructions. A RUN instruction is used to execute any commands during the **build** process. In this case we are running a package update and then installing nginx. The ENTRYPOINT is then running the nginx executable and we are using the EXPOSE command here to inform what port the container will be listening on. Remember in our earlier chapters, we saw that if we use the -P command, then the EXPOSE port will be used by default. However, you can always change the host port via the -p parameter as needed.
 
-`docker run -d -p 80:8081 --name webserver myimage`
+`docker run -d -p 8081:80 --name webserver myimage`
 
 `curl http://ipaddress:8081`
 
 Results :
 ```console
-# curl http://159.122.190.251:8081
-curl: (7) Failed to connect to 159.122.190.251 port 8081: Connection refused
+# curl http://159.122.2.109:8081
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+    body {
+        width: 35em;
+        margin: 0 auto;
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
 ```
 
-This command will not work on the ICP Ubuntu VM because ICP (the Calico component will take over the ports/network for security reason).
+Or you can also open a browser on your laptop and type :
+
+http://ipaddress:8081/ 
+
+You should see :
+
+![NGINX](./images/nginx2.png)  
 
 
 ## Conclusion
