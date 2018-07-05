@@ -437,8 +437,11 @@ Click on Configure client:
 
 ![Configure Client](./images/ClientSetup.png)
 
-This 5 lines contain a token that change every 12 hours. So then, you generally have to use these 5 commands to get connected  
+These 5 lines contain a token that change every 12 hours. So then, you generally have to use these 5 commands to get connected. 
 
+> We are **not** going to use this method to connect to the cluster
+
+We are going to create a script to help us to connect to our cluster.
 Go back to the ssh or putty terminal :
 
 `cd`
@@ -453,8 +456,7 @@ ACCESS_IP=`curl ifconfig.co`
 USERNAME=admin
 PASSWD=admin
 
-token=$(curl -s -k -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" -d "grant_type=password&username=$USERNAME&password=$PASSWD&scope=openid" https://$ACCESS_IP:8443/idprovider/
-v1/auth/identitytoken --insecure | jq .id_token | awk  -F '"' '{print $2}')
+token=$(curl -s -k -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" -d "grant_type=password&username=$USERNAME&password=$PASSWD&scope=openid" https://$ACCESS_IP:8443/idprovider/v1/auth/identitytoken --insecure | jq .id_token | awk  -F '"' '{print $2}')
 
 kubectl config set-cluster $CLUSTERNAME.icp --server=https://$ACCESS_IP:8001 --insecure-skip-tls-verify=true
 kubectl config set-context $CLUSTERNAME.icp-context --cluster=$CLUSTERNAME.icp
@@ -463,7 +465,7 @@ kubectl config set-context $CLUSTERNAME.icp-context --user=admin --namespace=def
 kubectl config use-context $CLUSTERNAME.icp-context
 ```
 
-Save the file (ctrl O, enter, ctrl X ) and ake this file executable :
+Save the file (ctrl O, enter, ctrl X ) and make this file executable :
 
 `chmod +x connect2icp.sh`
 
