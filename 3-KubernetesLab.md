@@ -30,7 +30,6 @@ IBM Cloud Private - Kubernetes Lab
     + [5. Check the health of apps](#5-check-the-health-of-apps)
     + [End of the lab](#end-of-the-lab)
 
-
 ---
 
 
@@ -62,6 +61,8 @@ Edit the hosts file and add the following line at the end (replace the ipaddress
     
 
 ### 3. Download a GIT repo for this exercise
+
+Now go back to the **Ubuntu VM** and download the samples using Git :
 
 `git clone https://github.com/IBM/container-service-getting-started-wt.git`
 	
