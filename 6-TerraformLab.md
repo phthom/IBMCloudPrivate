@@ -392,6 +392,8 @@ Create a new file called **icpinstall.sh**
 # THIS SCRIPT ONLY WORKS FOR LINUX
 # either run as root or as a sub-account with sudo configured for NOPASSWORD prompt
 # usage: ./icpinstall.sh
+# If you see the following error Error retrieving SSH key: SOAP-ENV:Client: Bad Request (HTTP 200)
+# comment out the line beginning with endpoint_url from ~/.softlayer.
 
 echo "***"
 echo "*** START"
@@ -442,7 +444,7 @@ echo "*** Get inception"
 docker pull ibmcom/icp-inception:2.1.0.3
 
 # Copy cluster
-echo "*** Copy Cluster"
+echo "*** Create Directory"
 mkdir /opt/icp
 cd /opt/icp
 
@@ -476,8 +478,74 @@ echo "*** Install ICP"
 cd /opt/icp/cluster
 docker run -e LICENSE=accept --net=host -t -v "$(pwd)":/installer/cluster ibmcom/icp-inception:2.1.0.3 install
 
+
+echo "*** Install Kubectl"
+docker run -e LICENSE=accept --net=host -v /usr/local/bin:/data ibmcom/icp-inception:2.1.0.3 cp /usr/local/bin/kubectl /data
+
+
+echo "*** Install connect2icp.sh"
+cd
+cat > connect2icp.sh <<EOF
+CLUSTERNAME=mycluster
+ACCESS_IP=`curl ifconfig.co`
+USERNAME=admin
+PASSWD=admin
+token=$(curl -s -k -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" -d "grant_type=password&username=$USERNAME&password=$PASSWD&scope=openid" https://$ACCESS_IP:8443/idprovider/v1/auth/identitytoken --insecure | jq .id_token | awk  -F '"' '{print $2}')
+kubectl config set-cluster $CLUSTERNAME.icp --server=https://$ACCESS_IP:8001 --insecure-skip-tls-verify=true
+kubectl config set-context $CLUSTERNAME.icp-context --cluster=$CLUSTERNAME.icp
+kubectl config set-credentials admin --token=$token
+kubectl config set-context $CLUSTERNAME.icp-context --user=admin --namespace=default
+kubectl config use-context $CLUSTERNAME.icp-context
+EOF
+
+chmod +x connect2icp.sh
+~/connect2icp.sh
+
+echo "*** Install ic and plugins"
+curl -fsSL https://clis.ng.bluemix.net/install/linux | sh
+wget https://mycluster.icp:8443/api/cli/icp-linux-amd64 --no-check-certificate
+ic plugin install icp-linux-amd64
+ic plugin install dev -r Bluemix
+
+echo "*** Install PV"
+cd /tmp
+mkdir data01
+
+cat <<EOF | kubectl create -f -
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: hostpath-pv-once-test1
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  hostPath:
+    path: /tmp/data01
+  persistentVolumeReclaimPolicy: Recycle
+EOF
+
+cat <<EOF | kubectl create -f -
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: hostpath-pv-many-test1
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 2Gi
+  hostPath:
+    path: /tmp/data01
+  persistentVolumeReclaimPolicy: Recycle
+EOF
+
+kubectl get pv
+
 echo "*** "
 echo "*** End of Install"
+
 ```
 
 Save this file and modify the **main.tf **file. We added 2 sections called **provisioners** : the first one copy the icpinstall.sh file to the /root directory in the newly created VM and the second provisioner will execute the script.
@@ -529,6 +597,33 @@ provisioner "remote-exec" {
 }
 ```
 > Note : the 2 provisioners are  associated to the resource (i.e. the VM). Notice that you also have to replace the **shortname_ssh_key** with the name you choose.
+> If you see the following error Error retrieving SSH key: SOAP-ENV:Client: Bad Request (HTTP 200) comment out the line beginning with endpoint_url from ~/.softlayer.
+
+To avoid this error `Error retrieving SSH key: SOAP-ENV:Client: Bad Request (HTTP 200)`,  on your laptop : 
+
+Go to your personal directory and visualize this file : `more ~/.softlayer`
+The
+```console 
+# more .softlayer
+[softlayer]
+username = IBM975455
+api_key = c96772f0cdffe1bd69f3c9d9b849408a99815ecf3ea0b807aa8273aa1e2790ed
+timeout = 0
+endpoint_url = https://api.softlayer.com/xmlrpc/v3.1/
+```
+
+Then comment out the endpoint_url :
+
+```console 
+# more .softlayer
+[softlayer]
+username = IBM975455
+api_key = c96772f0cdffe1bd69f3c9d9b849408a99815ecf3ea0b807aa8273aa1e2790ed
+timeout = 0
+# endpoint_url = https://api.softlayer.com/xmlrpc/v3.1/
+```
+
+
 
 Save the modifications and redo the `terraform plan` and `terraform apply`.
 This will automatically create the VM and launch the IBM Cloud Private installation (you will see the same steps as usually).
@@ -537,7 +632,7 @@ Test the access to the IBM Cloud Private console :
 
 https://ipaddress:8443
 
-> Note : to delete a VM, use the following command : `slcli cancel vm-id` where the vm-id is the number found on the list of VMs.
+> Note : to delete a VM, use the following command : `slcli vs cancel vm-id` where the vm-id is the number found on the list of VMs.
 
 # Congratulations 
 
