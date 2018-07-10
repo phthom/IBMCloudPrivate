@@ -112,11 +112,13 @@ Now you will create an ssh key pair and register it with Softlayer.
 The name you give the key in Softlayer has to be unique. This can be tricky if you are using a shared account. You can't just call it ssh-key.
 For now, use your name and some numbers  to make the key ID unique. For the following steps, replace 'shortname_ssh_key' with your own actual key ID.
 
+> On windows, you may need to install OpenSSH separately (check `ssh` command in the CLI ).
+
 On the command line, enter the following commands :
 ```console
 cd
-mkdir Terra
-cd Terra
+mkdir terra
+cd terra
 ssh-keygen -f shortname_ssh_key -P ""
 ```
 
@@ -164,9 +166,9 @@ Now you have collected the following information :
 
 # Task 6: Define your main.tf and variables.tf
 
-If you are not in the Terra directory, then move to it :
+If you are not in the terra directory, then move to it :
 
-`cd Terra`
+`cd terra`
 
 Create a new file called **main.tf**
 The main.tf file is a template that will contain all the VM definitions with variables.
@@ -373,17 +375,19 @@ slcli vs detail nicetest1 --passwords
 :               tags : -                                    :
 :....................:......................................:
 ```
-Then you can connect to the VM either using the root/password or the sshkey.
+Then you can connect to the VM either using the root/password or the sshkey (or use putty to get access on Windows)
 
 `ssh root@ipaddress`
 
-# Task 8: Using a script to configure the VM
+> Note : to delete a VM, use the following command : slcli vs cancel vm-id where the vm-id is the number found on the list of VMs.
+
+# Task 8: Using scripts to configure the VM
 
 The VM could be configured and customized after its creation. 
 A script can be copied and launched when Terraform finished launching the VM. 
-In our case, we want to install IBM Cloud Private in the VM. 
+In our case, we want to **install IBM Cloud Private** in the VM. 
 
-Go to the Terra directory we created before.
+Go to the terra directory we created before.
 Create a new file called **icpinstall.sh**
 
 ```console
@@ -458,7 +462,6 @@ systemctl restart sshd
 cp ~/.ssh/id_rsa ./cluster/ssh_key
 
 # Customize hosts
-
 echo "*** Customize hosts"
 echo "[master]" > /opt/icp/cluster/hosts
 echo "$MASTERIP" >> /opt/icp/cluster/hosts
@@ -483,25 +486,12 @@ echo "*** Install Kubectl"
 docker run -e LICENSE=accept --net=host -v /usr/local/bin:/data ibmcom/icp-inception:2.1.0.3 cp /usr/local/bin/kubectl /data
 
 
-echo "*** Install connect2icp.sh"
-cd
-cat > connect2icp.sh <<EOF
-CLUSTERNAME=mycluster
-ACCESS_IP=`curl ifconfig.co`
-USERNAME=admin
-PASSWD=admin
-token=$(curl -s -k -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" -d "grant_type=password&username=$USERNAME&password=$PASSWD&scope=openid" https://$ACCESS_IP:8443/idprovider/v1/auth/identitytoken --insecure | jq .id_token | awk  -F '"' '{print $2}')
-kubectl config set-cluster $CLUSTERNAME.icp --server=https://$ACCESS_IP:8001 --insecure-skip-tls-verify=true
-kubectl config set-context $CLUSTERNAME.icp-context --cluster=$CLUSTERNAME.icp
-kubectl config set-credentials admin --token=$token
-kubectl config set-context $CLUSTERNAME.icp-context --user=admin --namespace=default
-kubectl config use-context $CLUSTERNAME.icp-context
-EOF
+echo "*** Connect to Cluster"
 
-chmod +x connect2icp.sh
-~/connect2icp.sh
+cd /root
+./connect2icp.sh
 
-echo "*** Install ic and plugins"
+echo "*** Install ic"
 curl -fsSL https://clis.ng.bluemix.net/install/linux | sh
 wget https://mycluster.icp:8443/api/cli/icp-linux-amd64 --no-check-certificate
 ic plugin install icp-linux-amd64
@@ -541,19 +531,46 @@ spec:
   persistentVolumeReclaimPolicy: Recycle
 EOF
 
-kubectl get pv
-
 echo "*** "
 echo "*** End of Install"
 
 ```
+Save this file.
 
-Save this file and modify the **main.tf **file. We added 2 sections called **provisioners** : the first one copy the icpinstall.sh file to the /root directory in the newly created VM and the second provisioner will execute the script.
+We also need a connection script to get access to the cluster.
+Go to the terra directory we created before.
+Create a new file called **connect2icp.sh**
+
+```console
+#!/bin/bash
+#
+# THIS SCRIPT ONLY WORKS FOR LINUX
+# either run as root or as a sub-account with sudo configured for NOPASSWORD prompt
+# usage: ./connect2icp.sh
+# Connect the user to the ICP Cluster 
+
+CLUSTERNAME=mycluster
+ACCESS_IP=`curl ifconfig.co`
+USERNAME=admin
+PASSWD=admin
+token=$(curl -s -k -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" -d "grant_type=password&username=$USERNAME&password=$PASSWD&scope=openid" https://$ACCESS_IP:8443/idprovider/v1/auth/identitytoken --insecure | jq .id_token | awk  -F '"' '{print $2}')
+kubectl config set-cluster $CLUSTERNAME.icp --server=https://$ACCESS_IP:8001 --insecure-skip-tls-verify=true
+kubectl config set-context $CLUSTERNAME.icp-context --cluster=$CLUSTERNAME.icp
+kubectl config set-credentials admin --token=$token
+kubectl config set-context $CLUSTERNAME.icp-context --user=admin --namespace=default
+kubectl config use-context $CLUSTERNAME.icp-context
+
+```
+
+
+Save this file.
+
+Modify the **main.tf** file. We added 3 sections called **provisioners** : the first 2 ones copy the icpinstall.sh and connect2icp.sh files to the /root directory in the newly created VM and the third provisioner will execute the installation script.
 
 ```console
 provider "softlayer" {
-  username = "Phil"
-  api_key  = "c96ea0b827729b849408a99815f0cdf3c9decf3790edkjgkgkj65757"
+  username = "IBM708531"
+  api_key  = "c96ea0b807aa8273aa1e27729b849408a99815f0cdffe1bd69f3c9decf3790ed"
 }
 
 resource "softlayer_virtual_guest" "icpw" {
@@ -583,10 +600,23 @@ provisioner "file" {
             private_key = "${file("shortname_ssh_key")}"
           }
       }
+
+provisioner "file" {
+              source      = "./connect2icp.sh"
+              destination = "/root/connect2icp.sh"
+
+              connection {
+                  type     = "ssh"
+                  user     = "root"
+                  private_key = "${file("shortname_ssh_key")}"
+                }
+            }
+
 provisioner "remote-exec" {
         inline = [
           "chmod +x /root/icpinstall.sh",
-          "/root/icpinstall.sh",
+          "chmod +x /root/connect2icp.sh",
+          "/root/icpinstall.sh"
         ]
         connection {
             type     = "ssh"
@@ -594,12 +624,15 @@ provisioner "remote-exec" {
             private_key = "${file("shortname_ssh_key")}"
           }
       }
-}
-```
-> Note : the 2 provisioners are  associated to the resource (i.e. the VM). Notice that you also have to replace the **shortname_ssh_key** with the name you choose.
-> If you see the following error Error retrieving SSH key: SOAP-ENV:Client: Bad Request (HTTP 200) comment out the line beginning with endpoint_url from ~/.softlayer.
 
-To avoid this error `Error retrieving SSH key: SOAP-ENV:Client: Bad Request (HTTP 200)`,  on your laptop : 
+
+
+  }
+
+```
+> Note : the 3 provisioners are  associated to the resource (i.e. the VM). Notice that you also have to replace the **shortname_ssh_key** with the name you choose.
+
+To avoid a common error `Error retrieving SSH key: SOAP-ENV:Client: Bad Request (HTTP 200)`, then on your **laptop** : 
 
 Go to your personal directory and visualize this file : `more ~/.softlayer`
 The
@@ -612,7 +645,7 @@ timeout = 0
 endpoint_url = https://api.softlayer.com/xmlrpc/v3.1/
 ```
 
-Then comment out the endpoint_url :
+Then comment out the endpoint_url (the last line) :
 
 ```console 
 # more .softlayer

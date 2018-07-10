@@ -97,6 +97,7 @@ Application workloads can be deployed to run on an IBM Cloud Private cluster. Th
 
 Follow the instructions:
 
+---
 Log in to IBM Cloud using the ic login command to synchronize your projects with the IBM Cloud dashboard, and to enable the use of IBM Cloud services in your project. 
 ? Do you wish to continue without logging in? [y/n]> **y**
 ? Select a resource type:                  
@@ -122,12 +123,24 @@ Enter a number> **3**
 6. Web App - MongoDb + Express + Angular + Node
 7. Web App - MongoDb + Express + React + Node
 8. Show more details
-Enter a number> **4**
+Enter a number> **3**
 
+? Enter a name for your application> **abraca**
+Using the resource group default (default) of your account
+? Do you want to add services to your application? [y/n]> **n**
 
-? Enter a name for your project> **abraca**     
-                                  
-The project, abraca, has been successfully saved into the current directory.
+? Select from the following DevOps Toolchain and target runtime environment options: 
+Note: If you choose to create a DevOps Toolchain, then this machine must be 
+      configured for SSH access to your IBM Cloud Git Lab account at 
+      https://git.eu-gb.bluemix.net/profile/keys in order to download the 
+      application code.
+1. IBM DevOps, using Cloud Foundry buildpacks
+2. IBM DevOps, using Kubernetes containers
+3. No DevOps, with manual deployment
+Enter a number> **3**
+The application, **abraca**, has been successfully saved into the current directory.
+---
+
 
 Visualize your project. You can notice  that files and directories have been created for you.
 
@@ -142,9 +155,9 @@ You can notice that a lot of things have been created for you like :
 - **Dockerfile** for dockerization of the application
 - Dockerfile-tools 
 - **Jenkinsfile** to help deploying the application with Jenkins
-- a **manifest.yml** file for deploying in Cloud Foundry
-- a server directory containing the application (**server.js**)
-- helm charts
+- **manifest.yml** file for deploying in Cloud Foundry
+- **server** directory containing the application (**server.js**)
+- helm charts (in chart directory)
 - debugging options
 - lot of predefined directories, files and codes in the application
 
@@ -224,10 +237,12 @@ Where “admin” is your user account associated with the namespace to which yo
 
 For the simplest deploy experience, you can update your application’s cli-config.yml file to point to the IBM Cloud Private Kubernetes environment by adding these entries:
 
+```
 deploy-target: "container"
-deploy-image-target: "mycluster.icp:8500/<Namespace>/<App-Name>"
+deploy-image-target: "mycluster.icp:8500/<Namespace>/<App-Name>" 
+```
 
-The  <Namespace> is the namespace on IBM Cloud Private to which you are deploying, for example default. <App-Name> is the name of your application deployment.
+The  `<Namespace>` is the namespace on IBM Cloud Private to which you are deploying, for example default. `<App-Name>` is the name of your application deployment.
 
 In that case, we are going to edit the cli-config.yml :
 
