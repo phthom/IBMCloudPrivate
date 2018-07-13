@@ -21,8 +21,12 @@ The purpose of this lab is to install the dashboard in the IBM Cloud Private Clu
 ### Table of Contents
 
 ---
-
-
+- [Task 1: Download the manifest file](#task-1--download-the-manifest-file)
+- [Task 2: Modify the manifest file](#task-2--modify-the-manifest-file)
+- [Task 3: Deploy the Dashboard](#task-3--deploy-the-dashboard)
+- [Task 4: Connect to the Dashboard](#task-4--connect-to-the-dashboard)
+- [Task 6: Navigate in the Dashboard](#task-6--navigate-in-the-dashboard)
+- [Congratulations](#congratulations)
 ---
  
  
