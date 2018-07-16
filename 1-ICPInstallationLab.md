@@ -402,7 +402,8 @@ docker run -e LICENSE=accept --net=host -t -v "$(pwd)":/installer/cluster ibmcom
 Use the green link at the end of the installation script to get access to the console (admin/admin) in a browser:
 
 `https://ipaddress:8443`  
-![LoginICP](./images/LoginICP.png)
+
+![Loginicp](./images/Loginicp.png)
 
 You should receive the **Welcome Page**:
 
