@@ -403,7 +403,7 @@ Use the green link at the end of the installation script to get access to the co
 
 `https://ipaddress:8443`  
 
-![Loginicp](./images/Loginicp.png)
+![Loginicp](./images/loginicp.png)
 
 You should receive the **Welcome Page**:
 
