@@ -104,7 +104,7 @@ ibmcloud pr login -a https://mycluster.icp:8443 --skip-ssl-validation
 
 Results:
 ```console
-root:[~]: ibmcloud pr login -a https://mycluster.icp:8443 --skip-ssl-validation
+# ibmcloud pr login -a https://mycluster.icp:8443 --skip-ssl-validation
 API endpoint: https://mycluster.icp:8443
 
 Username> admin
@@ -142,7 +142,7 @@ OK
 
 Results:
 ```console
-root:[~]: ibmcloud pr cluster-config mycluster
+# ibmcloud pr cluster-config mycluster
 Configuring kubectl: /root/.bluemix/plugins/icp/clusters/mycluster/kube-config
 Property "clusters.mycluster" unset.
 Property "users.mycluster-user" unset.
@@ -168,7 +168,7 @@ OK
 
 Results:
 ```console
-root:[~]: helm init --client-only
+# helm init --client-only
 Creating /root/.helm/repository
 Creating /root/.helm/repository/cache
 Creating /root/.helm/repository/local
@@ -248,7 +248,7 @@ Results :
 
 Results :
 
-```
+```console
 # helm delete my-wordpress --purge --tls
 release "my-wordpress" deleted
 ```
@@ -298,7 +298,7 @@ Open the **healthcheck.yml** file
 
 Review the deployment's manifest
 
-```console
+```
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
@@ -509,7 +509,7 @@ Review the **service template**:
 
 Change the **-port section** with the following code:
 
-```console
+```
     - port: {{ .Values.service.externalPort }}
       targetPort: {{ .Values.service.internalPort }}
       protocol: TCP
@@ -577,7 +577,7 @@ Type the following command and don't forget the dot at the end:
 
 Results:
 ```console
-root:[hellonginx]: helm install --name hellonginx --namespace training --tls .
+# helm install --name hellonginx --namespace training --tls .
 NAME:   hellonginx
 LAST DEPLOYED: Thu Apr 19 23:49:47 2018
 NAMESPACE: training
@@ -602,13 +602,13 @@ NOTES:
 At the end of the answer, copy & paste the last 3 lines:
 
 ```console
-root:[hellonginx]:   export NODE_PORT=$(kubectl get --namespace training -o jsonpath="{.spec.ports[0].nodePort}" services hellonginx)
-root:[hellonginx]:   export NODE_IP=$(kubectl get nodes --namespace training -o jsonpath="{.items[0].status.addresses[0].address}")
-root:[hellonginx]:   echo http://$NODE_IP:$NODE_PORT
+# export NODE_PORT=$(kubectl get --namespace training -o jsonpath="{.spec.ports[0].nodePort}" services hellonginx)
+# export NODE_IP=$(kubectl get nodes --namespace training -o jsonpath="{.items[0].status.addresses[0].address}")
+# echo http://$NODE_IP:$NODE_PORT
 http://192.168.225.132:30073
 ```
 So that you should see the url:
-`http://192.168.225.132:30073`
+`http://ipaddress:30073`
 
 Try this url and get the nginx hello:
 
