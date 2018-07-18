@@ -12,7 +12,6 @@ IBM Cloud Private - Docker Lab
 
 ## Table of Contents
 
-- [Docker Lab](#docker-lab)
   * [Prerequisites](#prerequisites)
   * [Lab1 - Working with Docker](#lab1---working-with-docker)
     + [1. Launch a shell and confirm that docker is installed.](#1-launch-a-shell-and-confirm-that-docker-is-installed)
@@ -31,9 +30,13 @@ IBM Cloud Private - Docker Lab
     + [14. Oops, we can't delete that image until we delete the "couchdb" container.](#14-oops--we-can-t-delete-that-image-until-we-delete-the--couchdb--container)
     + [15. Delete the couchdb container, delete the couchdb image, and make sure it is gone. You can leave hello-world.](#15-delete-the-couchdb-container--delete-the-couchdb-image--and-make-sure-it-is-gone-you-can-leave-hello-world)
   * [Lab 2: Building Docker Images](#lab-2--building-docker-images)
-    + [1. Our First Dockerfile](#1-our-first-dockerfile)
+    + [1. Our First Dockerfile](#1-Our-First-Dockerfile)
+    + [2. Our Web Application](#2-Our-Web-Application)
   * [Conclusion](#conclusion)
-    + [End of the lab](#end-of-the-lab)
+   
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
 
 ## Prerequisites
 This set of instructions requires that docker is already installed and docker commands can be run from a bash shell. You can get more information at the [Docker website](https://www.docker.com/get-docker)
@@ -52,7 +55,7 @@ Before starting, login to the Ubuntu VM as **root**.
 
 `docker version`
   
-![Docker Version](./images/docker version.png)
+![Docker Version](./images/dockerversion.png)
   
 ### 2. As with all new computer things, it is obligatory that we start with "hello-world"
 
@@ -328,6 +331,8 @@ cat: can't open 'somefile.txt': No such file or directory
 ```
 
 You get the point?
+
+### 2. Our Web Application
 
 Now, let us look at another Dockerfile shown below:
 
