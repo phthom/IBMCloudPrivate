@@ -50,9 +50,9 @@ Before starting, login to the Ubuntu VM as **root**.
    The version number isn't particularly important.
    However, you can see both the client (CLI) and the server (engine).
 
-  `docker version`
+`docker version`
   
-  ![Docker Version](./images/docker version.png)
+![Docker Version](./images/docker version.png)
   
 ### 2. As with all new computer things, it is obligatory that we start with "hello-world"
 
@@ -130,17 +130,17 @@ Stop the most recent container and then check to see what's running.
 
 ### 11. Stop the other container and see what is running.
 
- `docker stop c3703c8648a6`
+`docker stop c3703c8648a6`
    
- `docker ps | grep couchdb`
+`docker ps | grep couchdb`
 
 ![Stop another container](./images/ps5.png)    
 
 ### 12. Notice the image still exists.
 
-  `docker images`
+`docker images`
   
-  ![image is still there](./images/images5.png)    
+![image is still there](./images/images5.png)    
   
   
 
@@ -148,9 +148,9 @@ Stop the most recent container and then check to see what's running.
 
 Go ahead and delete the couchdb image and double check that it is gone.
 
-` docker rmi couchdb`
+`docker rmi couchdb`
  
- ![error when removing the image](./images/images6.png)   
+![error when removing the image](./images/images6.png)   
  
 
 ### 14. Oops, we can't delete that image until we delete the "couchdb" container. 
@@ -159,26 +159,26 @@ You will noticed that all containers that you are listing have been stopped.
 
 `docker ps -a | grep couchdb`
 
- ![Listing past images](./images/rmi.png)  
+![Listing past images](./images/rmi.png)  
  
  
 
 ### 15. Delete the couchdb container, delete the couchdb image, and make sure it is gone. You can leave hello-world.
 
 `docker rm cde802ef4a40 c3703c8648a6 bceece7628dc 676fe6a8eb5f`
-    
+
 ![removing past images](./images/rm.png)  
  
- `docker rmi couchdb`
+`docker rmi couchdb`
  
- ![removing the image](./images/rmi2.png)  
+![removing the image](./images/rmi2.png)  
  
  
 `docker ps -a | grep couchdb`
 
- ![Listing past images](./images/images7.png)
+![Listing past images](./images/images7.png)
  
-  >***Note:*** Docker images and containers can be referenced by **name** or by **id**. 
+ >***Note:*** Docker images and containers can be referenced by **name** or by **id**. 
   
 
 
@@ -224,7 +224,7 @@ Execute the following in the /images folder as shown below (don't forget the dot
 
 Result: 
 ``` console
-root:[images]: docker build -t myimage:latest .
+# docker build -t myimage:latest .
 Sending build context to Docker daemon  2.048kB
 Step 1/2 : FROM busybox:latest
  ---> 8ac48589692a
@@ -246,7 +246,7 @@ If you run a docker images command now, you will see the myimage image listed in
 `docker images myimage`
 
 ```console
-root:[images]: docker images myimage
+# docker images myimage
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
 myimage             latest              992cc1bd4bda        6 hours ago         1.15MB
 ```
@@ -256,7 +256,7 @@ You can now launch a container, any time via the standard docker run command:
 `docker run -it myimage`
 
 ```console
-root:[images]: docker run -it myimage
+# docker run -it myimage
 / # ls
 bin   dev   etc   home  proc  root  sys   tmp   usr   var
 / # ps
@@ -270,7 +270,7 @@ We are back into the myimage shell. And you can use any shell commands like ls o
 
 `nano Dockerfile`
 
-```console
+```
 FROM busybox:latest
 MAINTAINER yourname
 CMD ["date"]
@@ -279,7 +279,7 @@ CMD ["date"]
 Then build and run the myimage container:
 
 ```console
-root:[images]: docker run -it myimage
+# docker run -it myimage
 Mon Apr 16 12:44:10 UTC 2018
 ```
 
@@ -294,7 +294,7 @@ In fact, while launching the container, you can override the default CMD by prov
 
 Change your Dockerfile to the following:
 
-```console
+```
 FROM busybox
 MAINTAINER myname
 ENTRYPOINT ["/bin/cat"]
@@ -304,7 +304,7 @@ CMD ["/etc/passwd"]
 Save, Build and re-reun myimage. 
 
 ```console
-root:[images]: docker run -it myimage
+# docker run -it myimage
 root:x:0:0:root:/root:/bin/sh
 daemon:x:1:1:daemon:/usr/sbin:/bin/false
 bin:x:2:2:bin:/bin:/bin/false
@@ -323,7 +323,7 @@ Try to override the CMD by running the container with a non-existent file name:
 `docker run -it myimage somefile.txt`
 
 ```console
-root:[images]: docker run -it myimage somefile.txt
+# docker run -it myimage somefile.txt
 cat: can't open 'somefile.txt': No such file or directory
 ```
 
@@ -331,7 +331,7 @@ You get the point?
 
 Now, let us look at another Dockerfile shown below:
 
-```console
+```
 FROM ubuntu
 MAINTAINER Philippe
 RUN apt-get update
