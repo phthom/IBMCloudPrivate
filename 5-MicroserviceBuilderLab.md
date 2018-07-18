@@ -12,7 +12,7 @@ IBM Cloud Private - Microservice Builder Lab
 
 # Cloud-Native Microservice Builder Lab
 
-In this tutorial, you create, install and run a cloud-native microservice application on an IBM® Cloud Private platform on Kubernetes. 
+In this tutorial, you create, install and run a cloud-native microservice application on an IBM® Cloud Private platform on Kubernetes.
 
 Microservice Builder will guide you thru the tree creation of complete project including all the directories, the manifest files, the monitoring option that you need for a perfect application.
 
@@ -31,7 +31,7 @@ Microservice Builder will guide you thru the tree creation of complete project i
 
 
 ---
- 
+
 
 
 
@@ -40,25 +40,25 @@ Microservice Builder will guide you thru the tree creation of complete project i
 
 From a machine that is hosting your environment, open a web browser and go to one of the following URLs to access the IBM Cloud Private management console:
   - Open a browser
-  - go to https://mycluster.icp:8443 
+  - go to https://mycluster.icp:8443
   - Login to ICP console with admin / admin
 
 ![Login to ICP console](./images/login2icp.png)
 
 On the terminal, connect on the Ubuntu VM using SSH or Putty.
 
-Check the the ic dev command is working:
+Check the the ibmcloud dev command is working:
 
-`ic dev`
+`ibmcloud dev`
 
 **Results**
 ```console
-# ic dev
+# ibmcloud dev
 NAME:
-   ic dev - A CLI plugin to create, manage, and run projects on IBM Cloud
+   ibmcloud dev - A CLI plugin to create, manage, and run projects on IBM Cloud
 
 USAGE:
-   ic dev command [arguments...] [command options]
+   ibmcloud dev command [arguments...] [command options]
 
 VERSION:
    1.3.3
@@ -83,7 +83,7 @@ COMMANDS:
    help              Show help
 ```
 
-If this command doesn't show, then go to the end of the ICP Installation Lab and install that command. 
+If this command doesn't show, then go to the end of the ICP Installation Lab and install that command.
 
 
 # Task 2: Use the Microservice Builder
@@ -91,14 +91,14 @@ If this command doesn't show, then go to the end of the ICP Installation Lab and
 
 Application workloads can be deployed to run on an IBM Cloud Private cluster. The deployment of an application workload must be made available as a Helm package. Such packages must either be made available for deployment on a Helm repository, or loaded into an IBM Cloud Private internal Helm repository.
 
-## 1. Create your project 
+## 1. Create your project
 
-`ic dev create`
+`ibmcloud dev create`
 
 Follow the instructions:
 
 ---
-Log in to IBM Cloud using the ic login command to synchronize your projects with the IBM Cloud dashboard, and to enable the use of IBM Cloud services in your project. 
+Log in to IBM Cloud using the ibmcloud login command to synchronize your projects with the IBM Cloud dashboard, and to enable the use of IBM Cloud services in your project.
 ? Do you wish to continue without logging in? [y/n]> **y**
 ? Select a resource type:                  
 1. Backend Service / Web App
@@ -129,10 +129,10 @@ Enter a number> **3**
 Using the resource group default (default) of your account
 ? Do you want to add services to your application? [y/n]> **n**
 
-? Select from the following DevOps Toolchain and target runtime environment options: 
-Note: If you choose to create a DevOps Toolchain, then this machine must be 
-      configured for SSH access to your IBM Cloud Git Lab account at 
-      https://git.eu-gb.bluemix.net/profile/keys in order to download the 
+? Select from the following DevOps Toolchain and target runtime environment options:
+Note: If you choose to create a DevOps Toolchain, then this machine must be
+      configured for SSH access to your IBM Cloud Git Lab account at
+      https://git.eu-gb.bluemix.net/profile/keys in order to download the
       application code.
 1. IBM DevOps, using Cloud Foundry buildpacks
 2. IBM DevOps, using Kubernetes containers
@@ -148,12 +148,12 @@ Visualize your project. You can notice  that files and directories have been cre
 # ls abraca
 chart           Dockerfile        Jenkinsfile  manifest.yml  public     run-debug  server
 cli-config.yml  Dockerfile-tools  LICENSE      package.json  README.md  run-dev    test
-root:[~]: 
+root:[~]:
 ```
 
 You can notice that a lot of things have been created for you like :
 - **Dockerfile** for dockerization of the application
-- Dockerfile-tools 
+- Dockerfile-tools
 - **Jenkinsfile** to help deploying the application with Jenkins
 - **manifest.yml** file for deploying in Cloud Foundry
 - **server** directory containing the application (**server.js**)
@@ -163,14 +163,14 @@ You can notice that a lot of things have been created for you like :
 
 Have a look at the following peace of code :
 
-`nano /root/abraca/server/server.js` 
+`nano /root/abraca/server/server.js`
 
 ![appmetrics](./images/appmetrics.png)
 
 In that node.js program, you can also notice that we already have predefined libraries and codes :
 - appmetrics (metrics collection)
 - log4js
-- express 
+- express
 - logger
 
 
@@ -179,12 +179,12 @@ In that node.js program, you can also notice that we already have predefined lib
 
 `cd abraca`
 
-`ic dev build`
+`ibmcloud dev build`
 
 **Results**
 ```console
 # cd abraca/
-# ic dev build
+# ibmcloud dev build
 Creating image abraca-express-tools based on Dockerfile-tools...
 OK                    
 Creating a container named 'abraca-express-tools' from that image...
@@ -217,7 +217,7 @@ Login to the container registry in the cluster
 ```console
 # docker login mycluster.icp:8500
 Username (admin): admin
-Password: 
+Password:
 Login Succeeded
 ```
 
@@ -239,7 +239,7 @@ For the simplest deploy experience, you can update your application’s cli-conf
 
 ```
 deploy-target: "container"
-deploy-image-target: "mycluster.icp:8500/<Namespace>/<App-Name>" 
+deploy-image-target: "mycluster.icp:8500/<Namespace>/<App-Name>"
 ```
 
 The  `<Namespace>` is the namespace on IBM Cloud Private to which you are deploying, for example default. `<App-Name>` is the name of your application deployment.
@@ -264,12 +264,12 @@ You’re now ready to deploy your Kubernetes application to the IBM Cloud Privat
 `cd /root/abraca/`
 
 
-`ic dev deploy`
+`ibmcloud dev deploy`
 
 Results :
 
 ```
-# ic dev deploy
+# ibmcloud dev deploy
 Tag the Run image to the Docker registry as mycluster.icp:8500/default/abraca:0.0.1
 Unable to tag the image abraca-express-run, will now attempt to build and tag it
 OK
@@ -305,10 +305,10 @@ Your app is hosted at http://159.122.190.252:31245/
 
 
 This deploy command build and upload the Docker image of your application to the IBM Cloud Private image repository
-This performs a deployment to your IBM Cloud Private Kubernetes cluster using the Helm chart that was generated by the **ic dev create** or **ic dev enable** command.
+This performs a deployment to your IBM Cloud Private Kubernetes cluster using the Helm chart that was generated by the **ibmcloud dev create** or **ibmcloud dev enable** command.
 …and now you have generated and deployed your first application to IBM Cloud Private using the IBM Cloud Developer Tools CLI.
 
-Go the ICP management console and check the Helm Release and all the Kubernetes components. 
+Go the ICP management console and check the Helm Release and all the Kubernetes components.
 
 Try the URL : `http://ipaddress:31245` from a browser.
 
@@ -316,7 +316,7 @@ Try the URL : `http://ipaddress:31245` from a browser.
 
 
 
-# Congratulations 
+# Congratulations
 
 You have successfully created and installed a microservice application with Microservice Builder.
 

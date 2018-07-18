@@ -60,7 +60,7 @@ Charts are easy to create, version, share, and publish — so start using Helm a
 # Task 1: Helm Setup
 
 
-## 1. Connect as root to the **Ubuntu VM** using SSH or Putty 
+## 1. Connect as root to the **Ubuntu VM** using SSH or Putty
 
 Be sure that you are connected to cluster. Use the kubectl command to check that you are connected:
 
@@ -73,8 +73,8 @@ If you get an error, execute the following script that we created in the install
 
 ## 2. How to install helm tool ?
 
-Helm is a client/server application : Helm client and Tiller server. 
-Before we can run any chart with helm, we should proceed to some installation and configuration. 
+Helm is a client/server application : Helm client and Tiller server.
+Before we can run any chart with helm, we should proceed to some installation and configuration.
 
 
 ## 3. Download the Helm client from the master
@@ -90,26 +90,26 @@ This command will download the helm file to /usr/local/bin directory.
 ```console
 export HELM_HOME=/root/.helm
 ```
-   
+
 
 ## 5. Configure the Cluster to set up Helm
 
-These 2 commands will first login to ICP cluster and configure your cluster. 
+These 2 commands will first login to ICP cluster and configure your cluster.
 cert.pem and key.pem certificates are added to the ~/.helm directory.
 
 
 ```console
-ic pr login -a https://mycluster.icp:8443 --skip-ssl-validation
+ibmcloud pr login -a https://mycluster.icp:8443 --skip-ssl-validation
 ```
 
 Results:
 ```console
-root:[~]: ic pr login -a https://mycluster.icp:8443 --skip-ssl-validation
+root:[~]: ibmcloud pr login -a https://mycluster.icp:8443 --skip-ssl-validation
 API endpoint: https://mycluster.icp:8443
 
 Username> admin
 
-Password> 
+Password>
 Authenticating...
 OK
 
@@ -138,11 +138,11 @@ OK
 ```
 
 
-`ic pr cluster-config mycluster`
+`ibmcloud pr cluster-config mycluster`
 
 Results:
 ```console
-root:[~]: ic pr cluster-config mycluster
+root:[~]: ibmcloud pr cluster-config mycluster
 Configuring kubectl: /root/.bluemix/plugins/icp/clusters/mycluster/kube-config
 Property "clusters.mycluster" unset.
 Property "users.mycluster-user" unset.
@@ -169,15 +169,15 @@ OK
 Results:
 ```console
 root:[~]: helm init --client-only
-Creating /root/.helm/repository 
-Creating /root/.helm/repository/cache 
-Creating /root/.helm/repository/local 
-Creating /root/.helm/plugins 
-Creating /root/.helm/starters 
-Creating /root/.helm/cache/archive 
-Creating /root/.helm/repository/repositories.yaml 
-Adding stable repo with URL: https://kubernetes-charts.storage.googleapis.com 
-Adding local repo with URL: http://127.0.0.1:8879/charts 
+Creating /root/.helm/repository
+Creating /root/.helm/repository/cache
+Creating /root/.helm/repository/local
+Creating /root/.helm/plugins
+Creating /root/.helm/starters
+Creating /root/.helm/cache/archive
+Creating /root/.helm/repository/repositories.yaml
+Adding stable repo with URL: https://kubernetes-charts.storage.googleapis.com
+Adding local repo with URL: http://127.0.0.1:8879/charts
 $HELM_HOME has been configured at /root/.helm.
 Not installing Tiller due to 'client-only' flag having been set
 Happy Helming!
@@ -241,7 +241,7 @@ Results :
  NAME                REVISION    UPDATED                     STATUS      CHART              NAMESPACE
  my-wordpress        1           Wed Jun 28 22:15:13 2017    DEPLOYED    wordpress-0.6.5    default
  ```
- 
+
 ## 5. Delete the package
 
 `helm delete my-wordpress --purge --tls`
@@ -262,7 +262,7 @@ Generally an helm chart is managing many pods, deployments, images, secrets, vol
 
 ## 1. Build the docker image for the demo
 
-Move to the Lab 2 directory: 
+Move to the Lab 2 directory:
 
 `cd "/root/container-service-getting-started-wt/Lab 2"`
 
@@ -360,9 +360,9 @@ Now that you have understood the structure of a kubernetes manifest file, you ca
 `cd`
 
 `helm create hellonginx`
-        
+
 ## 2. Look at the chart directory content.
-       
+
 `cd hellonginx`
 
 `tree .`
@@ -373,7 +373,7 @@ Now that you have understood the structure of a kubernetes manifest file, you ca
 
 `nano values.yaml`
 
-Look at **values.yaml** and **modify it**. Prepare to deploy **3** replicas of the nginx image. 
+Look at **values.yaml** and **modify it**. Prepare to deploy **3** replicas of the nginx image.
 
 Replace the service section and choose a port (like 30073 for instance) with the following code:
 
@@ -440,7 +440,7 @@ affinity: {}
 ````
 
 
-Review deployment template: 
+Review deployment template:
 
 `nano /root/hellonginx/templates/deployment.yaml`
 
@@ -503,7 +503,7 @@ spec:
 
 
 
-Review the **service template**: 
+Review the **service template**:
 
 `nano /root/hellonginx/templates/service.yaml`
 
@@ -615,7 +615,7 @@ Try this url and get the nginx hello:
 ![Welcome Nginx](./images/nginx.png)
 
 
-## 3. List the releases 
+## 3. List the releases
 
 `helm list --tls`
 
@@ -624,7 +624,7 @@ Results:
 ```console
 # helm list --tls
 NAME      	REVISION	UPDATED                 	STATUS  	CHART                	NAMESPACE
-hellonginx	1       	Thu Apr 19 23:49:47 2018	DEPLOYED	hellonginx-0.1.0     	training 
+hellonginx	1       	Thu Apr 19 23:49:47 2018	DEPLOYED	hellonginx-0.1.0     	training
 my-release	1       	Tue Apr 17 20:08:44 2018	DEPLOYED	ibm-jenkins-dev-1.0.0	default  
 ```
 
@@ -663,7 +663,7 @@ NAME                          READY     STATUS    RESTARTS   AGE
 hellonginx-6bcd9f4578-zqt6r   1/1       Running   0          11m
 ```
 
-## 7. Upgrade 
+## 7. Upgrade
 
 We now want to change the number of replicas to 3:
 
@@ -714,15 +714,15 @@ Successfully packaged chart and saved it to: /root/hellonginx-0.1.0.tgz
 
 **Login**to the master:
 
-`ic pr login -a https://mycluster.icp:8443 --skip-ssl-validation`
+`ibmcloud pr login -a https://mycluster.icp:8443 --skip-ssl-validation`
 
 Then, use the "bx pr" command to load the chart:
 
-`ic pr load-helm-chart --archive /root/hellonginx-0.1.0.tgz`
+`ibmcloud pr load-helm-chart --archive /root/hellonginx-0.1.0.tgz`
 
 **Results**
 ```console
-#  ic pr load-helm-chart --archive /root/hellonginx-0.1.0.tgz
+#  ibmcloud pr load-helm-chart --archive /root/hellonginx-0.1.0.tgz
 Loading helm chart
 Loaded helm chart
 
@@ -744,17 +744,17 @@ Leave the terminal and login to the ICP console with admin/admin :
 
 ![hello chart](images/hellonginx3.png)
 
-- Click configure to see the parameters: 
+- Click configure to see the parameters:
 
 ![hello chart](images/hellonginx4.png)
 
-Click **Install** to see the results. 
+Click **Install** to see the results.
 
-Of course, you can customize the README.MD and add an icon to make the chart more appealing. 
+Of course, you can customize the README.MD and add an icon to make the chart more appealing.
 
 # Congratulations
 
-You successfully created and managed charts to deploy applications on the IBM Cloud Private. 
+You successfully created and managed charts to deploy applications on the IBM Cloud Private.
 
 
 ---
