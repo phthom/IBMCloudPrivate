@@ -31,7 +31,7 @@
     + [Task 6: SSH Keys setup](#task-6--ssh-keys-setup)
     + [Task 7: Customize ICP](#task-7--customize-icp)
     + [Task 7: Install ICP](#task-7--install-icp)
-    + [Task 8: Install and configure CLIs  (kubectl, ic px, ic dev)](#task-8--install-and-configure-clis---kubectl--ic-px--ic-dev-)
+    + [Task 8: Install and configure CLIs  (kubectl, ibmcloud pr, ibmcloud dev)](#task-8--install-and-configure-clis---kubectl--ic-px--ic-dev-)
     + [Task 9: Adding persistent storage to Kubernetes](#task-9--adding-persistent-storage-to-kubernetes)
     + [Task 10: End of installation](#task-10--end-of-installation)
 - [5. Second Option: Using Vagrant and VirtualBox](#5-second-option--using-vagrant-and-virtualbox)
@@ -86,24 +86,24 @@
     - REST API:  used for communicating with the workers
     - Scheduling and replication logic
     - Generally 3 or more master nodes for resiliency
-- **worker node** 
+- **worker node**
     - is a worker machine in Kubernetes, previously known as a minion. A node may be a **VM** or **physical machine**, depending on the cluster. Each node has the services necessary to run pods and is managed by the master components.
     - **Kubelet**  agent that accepts commands from the master
     - **Kubeproxy**: network proxy service on a node level, responsible for routing activities for inbound or ingress traffic
     - Docker host
-- **Containers**: Units of packaging 
+- **Containers**: Units of packaging
 - **Pods**:
     - A collection of containers that run on a worker node
     - A pod can contain more than one service
     - Each pod has it’s own IP
     - A pod shares a PID namespace, network, and hostname
 - **Replication Controller** :
-    - Ensures availability and scalability 
+    - Ensures availability and scalability
     - Responsible for maintaining as many pods as requested by the user
     - Uses a template that describes specifically what each pod should contain
 - **Labels**: 
     - Metadata assigned to K8 resources – such as pods, services
-    - Key-Value pairs for identification 
+    - Key-Value pairs for identification
     - Critical to K8s as it relies on querying the cluster for resources that have certain labels
 - **Services:**
     - Collection of pods exposed as an endpoint
@@ -111,8 +111,8 @@
 - **Secrets**:
     - Sensitive information that containers need to read or consume
     - Are special volumes mounted automatically so that the containers can read its contents
-    - Each entry has it’s own path 
- 
+    - Each entry has it’s own path
+
 
 ### Architecture
 
@@ -120,7 +120,7 @@ See below a global picture showing ICP architecture and most common components.
 
 ![Architecture](./images/architecture.png)
 
-This lab is going to focus on the couple "Docker & Kubernetes" which is the main foundation of IBM Cloud Private. 
+This lab is going to focus on the couple "Docker & Kubernetes" which is the main foundation of IBM Cloud Private.
 
 # 2. Objectives
 
@@ -133,7 +133,7 @@ You will learn how to:
 - configure the installation setup for ICP
 - check and validate all the prerequisites
 - install Docker and Hyperkube
-- check all the components 
+- check all the components
 
 
 # 3. Prerequisites
@@ -168,7 +168,7 @@ Here are the steps:
 
 Before updating the operating system, check the **/etc/hosts** file in Linux.
 
-Use **putty** or **ssh** to get connected to the ubuntu VM. 
+Use **putty** or **ssh** to get connected to the ubuntu VM.
 
 `ssh root@ipaddress`
 
@@ -179,7 +179,7 @@ Once connected, check your (public) ip address by typing the command:
 `ifconfig`
 
 Results:
-```console 
+```console
 # ifconfig
 eth0      Link encap:Ethernet  HWaddr 06:41:88:4e:6f:f3  
           inet addr:10.45.154.246  Bcast:10.45.154.255  Mask:255.255.255.192
@@ -187,7 +187,7 @@ eth0      Link encap:Ethernet  HWaddr 06:41:88:4e:6f:f3
           UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
           RX packets:1813 errors:0 dropped:0 overruns:0 frame:0
           TX packets:57 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000 
+          collisions:0 txqueuelen:1000
           RX bytes:144586 (144.5 KB)  TX bytes:4102 (4.1 KB)
 
 eth1      Link encap:Ethernet  HWaddr 06:29:fc:86:31:fa  
@@ -196,7 +196,7 @@ eth1      Link encap:Ethernet  HWaddr 06:29:fc:86:31:fa
           UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
           RX packets:125968 errors:0 dropped:0 overruns:0 frame:0
           TX packets:101137 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000 
+          collisions:0 txqueuelen:1000
           RX bytes:13508626 (13.5 MB)  TX bytes:17795310 (17.7 MB)
 ```
 
@@ -205,7 +205,7 @@ or use the following command :
 `curl ifconfig.co`
 
 Results:
-```console 
+```console
 # curl ifconfig.co
 158.175.102.12
 ```
@@ -293,7 +293,7 @@ Check that Docker is running (client and server):
 
 ![Check Docker is running](./images/CheckDocker.png)
 
-> Docker client is mainly the CLI. The server is composed of different programs and among then, there is the **containerd**, the engine managing the isolation/running of containers. 
+> Docker client is mainly the CLI. The server is composed of different programs and among then, there is the **containerd**, the engine managing the isolation/running of containers.
 
 You can look around at the docker CLI (and go thru some of  the sub-commands) by just typing:
 
@@ -330,7 +330,7 @@ docker run -e LICENSE=accept -v "$(pwd)":/data ibmcom/icp-inception:2.1.0.3 cp -
 > Note:  this docker command is executing the linux copy (cp) command from the volume (-v parameter). This will create a cluster directory in /opt/icp with all necessary files.
 
 
-### Task 6: SSH Keys setup 
+### Task 6: SSH Keys setup
 
 We are going to generate new ssh keys in the /opt/icp/cluster directory:
 
@@ -338,7 +338,7 @@ We are going to generate new ssh keys in the /opt/icp/cluster directory:
 
 `cat ~/.ssh/id_rsa.pub | sudo tee -a ~/.ssh/authorized_keys `
 
-`systemctl restart sshd ` 
+`systemctl restart sshd `
 
 `cp ~/.ssh/id_rsa ./cluster/ssh_key  `
 
@@ -350,7 +350,7 @@ We are going to generate new ssh keys in the /opt/icp/cluster directory:
 
 ### Task 7: Customize ICP
 
-Add the IP address of each node in the cluster to the **/opt/icp/cluster/hosts file** (in our case, we use the same ip address for each component). 
+Add the IP address of each node in the cluster to the **/opt/icp/cluster/hosts file** (in our case, we use the same ip address for each component).
 
 > Use the unique **ipaddress** that you have already used.
 
@@ -360,13 +360,13 @@ Add the IP address of each node in the cluster to the **/opt/icp/cluster/hosts f
 
 Save the file (ctrl O, enter, ctrl X ).
 
-To understand the installation setup, you can look at the /opt/icp/cluster/config.yaml where you will find all the parameters. 
+To understand the installation setup, you can look at the /opt/icp/cluster/config.yaml where you will find all the parameters.
 
-`more /opt/icp/cluster/config.yaml` 
+`more /opt/icp/cluster/config.yaml`
 
-No need to change for default installation. 
+No need to change for default installation.
 
-> *hosts* and *config.yaml* are the 2 most important files to parameter the ICP installation. In a "standard configuration" with multiple worker nodes, you should specify a list of IP addresses under the worker section. At the time of this version, only ip addresses are supported in the *hosts* file. 
+> *hosts* and *config.yaml* are the 2 most important files to parameter the ICP installation. In a "standard configuration" with multiple worker nodes, you should specify a list of IP addresses under the worker section. At the time of this version, only ip addresses are supported in the *hosts* file.
 
 **You are now ready to install IBM Cloud Private**.
 
@@ -396,7 +396,7 @@ docker run -e LICENSE=accept --net=host -t -v "$(pwd)":/installer/cluster ibmcom
 ```
 
 
-**BEFORE GOING TO THE NEXT STEP, WAIT 5 MINUTES** so that everything can start gracefully. 
+**BEFORE GOING TO THE NEXT STEP, WAIT 5 MINUTES** so that everything can start gracefully.
 
 
 Use the green link at the end of the installation script to get access to the console (admin/admin) in a browser:
@@ -417,7 +417,7 @@ The **Catalog** shows Charts that you can visit (it could take au few seconds to
 
 You can look at the (helm) catalog and visit some entries (but don't create any application at the moment).
 
-### Task 8: Install and configure CLIs  (kubectl, ic px, ic dev)
+### Task 8: Install and configure CLIs
 
 At this point, you will need to install the **Kubernetes CLI** (command kubectl).  
 For that purpose, open a ssh terminal with the Ubuntu VM in root mode and type the following command:
@@ -426,9 +426,9 @@ For that purpose, open a ssh terminal with the Ubuntu VM in root mode and type t
 docker run -e LICENSE=accept --net=host -v /usr/local/bin:/data ibmcom/icp-inception:2.1.0.3 cp /usr/local/bin/kubectl /data
 ```
 
-This docker command will copy the kubectl program to the /usr/local/bin. 
+This docker command will copy the kubectl program to the /usr/local/bin.
 
-Now, you need to setup the endpoint to tell the kubectl command where is the ICP Cluster and what are the correct certificates. 
+Now, you need to setup the endpoint to tell the kubectl command where is the ICP Cluster and what are the correct certificates.
 To do so, go to the ICP console and select your profile on the right hand:
 
 ![Configure Client](./images/Client.png)
@@ -437,7 +437,7 @@ Click on Configure client:
 
 ![Configure Client](./images/ClientSetup.png)
 
-These 5 lines contain a token that change every 12 hours. So then, you generally have to use these 5 commands to get connected. 
+These 5 lines contain a token that change every 12 hours. So then, you generally have to use these 5 commands to get connected.
 
 > We are **not** going to use this method to connect to the cluster
 
@@ -514,12 +514,12 @@ To get help from the kubectl, just type this command:
 
 `kubectl`
 
-> **Optional** : it could be interesting to define an alias name for docker and kubectl commands. 
+> **Optional** : it could be interesting to define an alias name for docker and kubectl commands.
 
 To do so, from the ssh terminal, type the following commands:
 
 `cd`
- 
+
 `nano .bashrc`
 
 At the end of the file, add the 3 lines:
@@ -527,7 +527,7 @@ At the end of the file, add the 3 lines:
 ```console
 alias k='kubectl'
 alias d='docker'
-alias h='helm' 
+alias h='helm'
 ```
 
 Save the file (ctrl O, enter, ctrl X ). Source your script with the following command:
@@ -544,9 +544,9 @@ Finally, you can also install the **ic** command (former bx command) :
 
 ![bx CLI](./images/bxCLI.png)
 
-the **ic** command is a generic command for all the IBM Cloud (private and public). The former name bx comes from Bluemix. You can also use **ibmcloud** instead of ic or bx.
+the **ibmcloud** command is a generic command for all the IBM Cloud (private and public). The former name bx comes from Bluemix.
 
-The ic command is using **plugins** to add some features. Now, download the ic pr **plugin** to get the ICP specific commands:
+The ibmcloud command is using **plugins** to add some features. Now, download the ibmcloud pr **plugin** to get the ICP specific commands:
 
 ```console
 wget https://ipaddress:8443/api/cli/icp-linux-amd64 --no-check-certificate
@@ -554,27 +554,27 @@ wget https://ipaddress:8443/api/cli/icp-linux-amd64 --no-check-certificate
 
 ![Download the ICP plugin](./images/plugin.png)
 
-Finally add this plugin to ic :
+Finally add this plugin to ibmcloud :
 
-`ic plugin install icp-linux-amd64`
+`ibmcloud plugin install icp-linux-amd64`
 
-`ic plugin show icp`
+`ibmcloud plugin show icp`
 
 ![ICP Command plugin help](./images/pluginhelp.png)
 
-Before using the 'ic pr', you must login to the master:
+Before using the **ibmcloud pr**, you must login to the master:
 
-`ic pr login -a https://mycluster.icp:8443 --skip-ssl-validation`
+`ibmcloud pr login -a https://mycluster.icp:8443 --skip-ssl-validation`
 
-> For the login : admin/admin 
+> For the login : admin/admin
 
 ```console
-# ic pr login -a https://mycluster.icp:8443 --skip-ssl-validation
+# ibmcloud pr login -a https://mycluster.icp:8443 --skip-ssl-validation
 API endpoint: https://mycluster.icp:8443
 
 Username> admin
 
-Password> 
+Password>
 Authenticating...
 OK
 
@@ -600,28 +600,29 @@ Helm configured successfully
 
 ```
 
-With that ic pr CLI, you can manage the infrastructure part of the cluster like adding new worker nodes (machine-type-add, worker-add) and so on.
+With that **ibmcloud pr** CLI, you can manage the infrastructure part of the cluster like adding new worker nodes (machine-type-add, worker-add) and so on.
 
 Then you can type some commands concerning your cluster:
 
-`ic pr masters mycluster`
+`ibmcloud pr masters mycluster`
 
 Results
 ```console
-# ic pr masters mycluster
+# ibmcloud pr masters mycluster
 ID                      Private IP        Machine Type   State   
 mycluster-00000000-m1   159.122.190.251   -              deployed   
 ```
 
-Among all sub-commands in 'ic pr', there are some commands to manage the infrastructure components like :
+Among all sub-commands in 'ibmcloud pr', there are some commands to manage the infrastructure components like :
 - cluster
 - workers (adding, removing ...)
 - register (docker image management )
+- helm repositories
 
 
-Finally also add the 'ic dev' plugin to successfully use the **Microservice Builder**:
+Finally also add the **ibmcloud dev** plugin to successfully use the **Microservice Builder**:
 
-`ic plugin install dev -r Bluemix`
+`ibmcloud plugin install dev -r Bluemix`
 
 ![Adding the bx dev plugin](./images/bxdev.png)
 
@@ -633,7 +634,7 @@ Select **Dashboard** in the menu.
 
 ![Dashboard](./images/pv-dashboard.png)
 
-Normally after the installation, all internal storage is used by ICP (so that's why we see 0 % available in the storage metric). 
+Normally after the installation, all internal storage is used by ICP (so that's why we see 0 % available in the storage metric).
 We are now going to add some persistent storage.
 In the terminal, use the following commands:
 
@@ -702,7 +703,7 @@ Once created these 2 volumes (hostpath) should be listed with the following comm
 
 ![Persistent Volume](./images/pv-volumes.png)
 
-> Note: the 2 volumes are shown as available storage. 
+> Note: the 2 volumes are shown as available storage.
 
 Now go back to the Dashboard to see the change:
 
@@ -712,19 +713,19 @@ Now go back to the Dashboard to see the change:
 
 ### Task 10: End of installation
 
-At this point, you can now go thru some other labs to implement applications using containers and Kubernetes solutions. 
+At this point, you can now go thru some other labs to implement applications using containers and Kubernetes solutions.
 
 
 # 5. Second Option: Using Vagrant and VirtualBox
 
-This option is an alternative to the previous (simple) detailed installation. We are not covering this installation for the moment but you can try it on your own laptop. 
+This option is an alternative to the previous (simple) detailed installation. We are not covering this installation for the moment but you can try it on your own laptop.
 This ICP installation uses VirtualBox (that you need to install as a prerequisites).
 
 The link below explain the steps:
 
 https://github.com/IBM/deploy-ibm-cloud-private/blob/master/docs/deploy-vagrant.md
 
-Note: this installation is using ICP version 2.1.0.1 instead of the latest one. You should change the version to **2.1.0.3**in the configuration file. Also don't stop the VM and use the vagrant suspend command. 
+Note: this installation is using ICP version 2.1.0.1 instead of the latest one. You should change the version to **2.1.0.3**in the configuration file. Also don't stop the VM and use the vagrant suspend command.
 
 
 # 6. Conclusion
@@ -734,7 +735,7 @@ Note: this installation is using ICP version 2.1.0.1 instead of the latest one. 
 You finally went thru the following features :
 - [x] You setup a VM using Ubuntu version 16.04
 - [x] You checked all the prerequisites before the ICP installation
-- [x] You installed Docker 
+- [x] You installed Docker
 - [x] You installed ICP community edition (version 2.1.0.3) on one host
 - [x] You connected to the ICP console
 - [x] You setup the kubectl command line
@@ -947,7 +948,7 @@ After reboot, reconnect (ssh) to your VM with root credentials
 
 #  appendix B : Changing ICP admin password
 
-This tutorial describes how to change the admin password. 
+This tutorial describes how to change the admin password.
 
 > ATTENTION : This procedure could be dangerous - Knowing **vi** is a prerequisite.
 
@@ -969,7 +970,7 @@ TXlOZXdQYXNzd29yZA==
 
 ###  Task B3 - Edit ICP secrets
 
-`kubectl -n kube-system edit secrets platform-auth-idp-credentials` 
+`kubectl -n kube-system edit secrets platform-auth-idp-credentials`
 
 Results :
 ```console
@@ -977,16 +978,16 @@ Results :
 error: You must be logged in to the server (Unauthorized)
 ```
 
-> If you see that message then use the ./connect2ICP.sh to reconnect to the cluster. 
+> If you see that message then use the ./connect2ICP.sh to reconnect to the cluster.
 
-`kubectl -n kube-system edit secrets platform-auth-idp-credentials` 
+`kubectl -n kube-system edit secrets platform-auth-idp-credentials`
 
 Results :
 ![vi secrets](./images/visecrets.png)
 
-This command opens up the **vi** text editor on the secrets file. 
-Locate the **admin-password** and change the existing encrypted password with the one that you generated. 
-Don't change anything else in the file. 
+This command opens up the **vi** text editor on the secrets file.
+Locate the **admin-password** and change the existing encrypted password with the one that you generated.
+Don't change anything else in the file.
 Save your work : **escape  :wq!**
 
 ###  Task B4 - Delete the auth pods
@@ -1009,12 +1010,12 @@ Wait until the auth pods have been restarted
 
 Results :
 
-```console 
+```console
 # kubectl -n kube-system get pods -l k8s-app=auth-idp
 NAME             READY     STATUS    RESTARTS   AGE
 auth-idp-swgrc   3/3       Running   0          46s
 ```
-Then test the new password : 
+Then test the new password :
 
 **First test : go to the ICP console http://ipaddress:8443 and log in with your new password. If it works, modify also connect2icp.sh script**
 
@@ -1022,7 +1023,7 @@ Then test the new password :
 
 `nano ./connect2icp.sh`
 
-Change the 4th line PASSWD with your new password. 
+Change the 4th line PASSWD with your new password.
 
 
 ![new password](./images/newpassword.png)
