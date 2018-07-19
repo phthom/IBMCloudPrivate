@@ -494,8 +494,8 @@ cd /root
 echo "*** Install ic"
 curl -fsSL https://clis.ng.bluemix.net/install/linux | sh
 wget https://mycluster.icp:8443/api/cli/icp-linux-amd64 --no-check-certificate
-ic plugin install icp-linux-amd64
-ic plugin install dev -r Bluemix
+ibmcloud plugin install icp-linux-amd64
+ibmcloud plugin install dev -r Bluemix
 
 echo "*** Install PV"
 cd /tmp
@@ -510,7 +510,7 @@ spec:
   accessModes:
   - ReadWriteOnce
   capacity:
-    storage: 1Gi
+    storage: 30Gi
   hostPath:
     path: /tmp/data01
   persistentVolumeReclaimPolicy: Recycle
@@ -525,12 +525,11 @@ spec:
   accessModes:
   - ReadWriteMany
   capacity:
-    storage: 2Gi
+    storage: 50Gi
   hostPath:
     path: /tmp/data01
   persistentVolumeReclaimPolicy: Recycle
 EOF
-
 echo "*** "
 echo "*** End of Install"
 
