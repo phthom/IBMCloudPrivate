@@ -6,6 +6,9 @@ IBM Cloud Private - Helm Lab
  </b></a></div>
 
 ---
+# Helm Lab
+---
+
 ![helmlogo2](images/helmlogo2.png)
 
 ---
@@ -22,7 +25,7 @@ Charts are easy to create, version, share, and publish — so start using Helm a
 ---
 
 - [Task 1: Helm Setup](#task-1--helm-setup)
-  * [1. Connect as root to the **Ubuntu VM** using SSH or Putty](#1-connect-as-root-to-the---ubuntu-vm---using-ssh-or-putty)
+  * [1. Connect to the Ubuntu VM](#1-connect-as-root-to-the---ubuntu-vm---using-ssh-or-putty)
   * [2. How to install helm tool ?](#2-how-to-install-helm-tool--)
   * [3. Download the Helm client from the master](#3-download-the-helm-client-from-the-master)
   * [4. Set an environment variable](#4-set-an-environment-variable)
@@ -44,7 +47,7 @@ Charts are easy to create, version, share, and publish — so start using Helm a
   * [2. Look at the chart directory content.](#2-look-at-the-chart-directory-content)
   * [3. Check the chart](#3-check-the-chart)
 - [Task 5: Using Helm](#task-5--using-helm)
-  * [1. Create a new namespace in ICP:](#1-create-a-new-namespace-in-icp-)
+  * [1. Create a new namespace](#1-create-a-new-namespace-in-icp-)
   * [2. Install the chart to the training namespace](#2-install-the-chart-to-the-training-namespace)
   * [3. List the releases](#3-list-the-releases)
   * [4. List the deployments](#4-list-the-deployments)
@@ -60,7 +63,9 @@ Charts are easy to create, version, share, and publish — so start using Helm a
 # Task 1: Helm Setup
 
 
-## 1. Connect as root to the **Ubuntu VM** using SSH or Putty
+### 1. Connect to the Ubuntu VM 
+
+Login as root to the Ubuntu VM using SSH or Putty
 
 Be sure that you are connected to cluster. Use the kubectl command to check that you are connected:
 
@@ -71,13 +76,13 @@ If you get an error, execute the following script that we created in the install
 `~/connect2icp.sh`
 
 
-## 2. How to install helm tool ?
+### 2. How to install helm tool ?
 
 Helm is a client/server application : Helm client and Tiller server.
 Before we can run any chart with helm, we should proceed to some installation and configuration.
 
 
-## 3. Download the Helm client from the master
+### 3. Download the Helm client from the master
 
 ```console
 docker run -e LICENSE=accept --net=host -v /usr/local/bin:/data ibmcom/icp-helm-api:1.0.0 cp /usr/src/app/public/cli/linux-amd64/helm /data
@@ -85,14 +90,14 @@ docker run -e LICENSE=accept --net=host -v /usr/local/bin:/data ibmcom/icp-helm-
 
 This command will download the helm file to /usr/local/bin directory.
 
-## 4. Set an environment variable
+### 4. Set an environment variable
 
 ```console
 export HELM_HOME=/root/.helm
 ```
 
 
-## 5. Configure the Cluster to set up Helm
+### 5. Configure the Cluster to set up Helm
 
 These 2 commands will first login to ICP cluster and configure your cluster.
 cert.pem and key.pem certificates are added to the ~/.helm directory.
@@ -162,7 +167,7 @@ OK
 ```
 
 
-## 6. Initialize Helm
+### 6. Initialize Helm
 
 `helm init --client-only`
 
@@ -198,7 +203,7 @@ Server: &version.Version{SemVer:"v2.7.3+icp", GitCommit:"27442e4cfd324d8f82f935f
 ```
 > The helm Client and server should be the same version (i.e. version 2.7.3+icp)
 
-## 7. Access to the ICP container registry
+### 7. Access to the ICP container registry
 
 For the next exercise, we need to get access to the IBM Cloud Private Registry. To do so,  login to the private registry:
 
@@ -209,7 +214,7 @@ For the next exercise, we need to get access to the IBM Cloud Private Registry. 
 # Task 2: Installing a simple application
 
 
-## 1. Getting a new helm repo
+### 1. Getting a new helm repo
 
 Add a Helm repository. To add the Kubernetes Incubator repository, run the following command:
 
@@ -217,20 +222,20 @@ Add a Helm repository. To add the Kubernetes Incubator repository, run the follo
 helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com/
 ```
 
-## 2. View the available packages
+### 2. View the available packages
 
 `helm search -l`
 
 You should see a very long list of packages.
 
-## 3. Install a package
+### 3. Install a package
 
 In this command, package_name is the name for the package, and package_in_repo is the name of the available package to install. For example, to install the WordPress package, run the following command:
 
 `helm install --name=my-wordpress stable/wordpress --tls`
 
 
-## 4. List the package
+### 4. List the package
 
 
 `helm list --tls`
@@ -242,7 +247,7 @@ Results :
  my-wordpress        1           Wed Jun 28 22:15:13 2017    DEPLOYED    wordpress-0.6.5    default
  ```
 
-## 5. Delete the package
+### 5. Delete the package
 
 `helm delete my-wordpress --purge --tls`
 
@@ -260,7 +265,7 @@ Generally an helm chart is managing many pods, deployments, images, secrets, vol
 
 
 
-## 1. Build the docker image for the demo
+### 1. Build the docker image for the demo
 
 Move to the Lab 2 directory:
 
@@ -278,7 +283,7 @@ Result:
 ![Build2](./images/Build2.png)
 
 
-## 2. View the image in the console:
+### 2. View the image in the console:
 
 	- Select **Menu > Manage > Images**
 	- Click on the `default/hello-world`
@@ -286,7 +291,7 @@ Result:
 
 ![New version](./images/version.png)
 
-## 3. View a kubernetes manifest
+### 3. View a kubernetes manifest
 
 Open the **healthcheck.yml** file
 
@@ -355,15 +360,17 @@ spec:
 
 Now that you have understood the structure of a kubernetes manifest file, you can start working with helm chart. Basically a helm chart is a collection of manifest files that are deployed as a group. The deployment includes the ability to perform variable substitution based on a configuration file.
 
-## 1. Initialize an empty chart directory
+### 1. Initialize an empty chart directory
 
 `cd`
 
 `helm create hellonginx`
 
-## 2. Look at the chart directory content.
+### 2. Look at the chart directory content.
 
 `cd hellonginx`
+
+`apt install tree`
 
 `tree .`
 
@@ -541,7 +548,7 @@ spec:
     app: {{ template "name" . }}
     release: {{ .Release.Name }}
 ```
-## 3. Check the chart
+### 3. Check the chart
 
 Go back to the hellonginx path and check the validity of the helm chart.
 
@@ -555,21 +562,24 @@ Go back to the hellonginx path and check the validity of the helm chart.
 
 The helm chart that we created in the previous section that has been verified now can be deployed.
 
-## 1. Create a new namespace in ICP:
+### 1. Create a new namespace
 
+You can use the command line to create a new namespace or you can use the IBM Cloud Private Console to do so:
 - Open a  Web browser from the application launcher
 - Go to `https://mycluster.icp:8443/`
 - Login as `admin` with the password of `admin`
 - Go to **Menu > Manage**
 
-- Select __Namespaces__ then click __New namespace__<br>
+- Select __Namespaces__ then click __New namespace__
+
+
 ![Organization menu](images/namespaces.png)
 
-  - Specify the namespace of `training` and click __Add namespace__.<br>
+  - Specify the namespace of `training` and click __Add namespace__
 ![Add namespace](images/newnamespace.png)
 
 
-## 2. Install the chart to the training namespace
+### 2. Install the chart to the training namespace
 
 Type the following command and don't forget the dot at the end:
 
@@ -615,7 +625,7 @@ Try this url and get the nginx hello:
 ![Welcome Nginx](./images/nginx.png)
 
 
-## 3. List the releases
+### 3. List the releases
 
 `helm list --tls`
 
@@ -629,7 +639,7 @@ my-release	1       	Tue Apr 17 20:08:44 2018	DEPLOYED	ibm-jenkins-dev-1.0.0	defa
 ```
 
 
-## 4. List the deployments
+### 4. List the deployments
 
 `kubectl get deployments --namespace=training`
 
@@ -639,7 +649,7 @@ NAME         DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
 hellonginx   1         1         1            1           9m
 ```
 
-## 5. List the services
+### 5. List the services
 
 `kubectl get services --namespace=training`
 
@@ -651,7 +661,7 @@ hellonginx   NodePort   10.0.0.131   <none>        80:30073/TCP   10m
 
 Locate the line port 80:300073.  
 
-## 6. List the pods
+### 6. List the pods
 
 `kubectl get pods --namespace=training`
 
@@ -663,7 +673,7 @@ NAME                          READY     STATUS    RESTARTS   AGE
 hellonginx-6bcd9f4578-zqt6r   1/1       Running   0          11m
 ```
 
-## 7. Upgrade
+### 7. Upgrade
 
 We now want to change the number of replicas to 3:
 
@@ -708,7 +718,7 @@ First, package the helm chart as a tgz file:
 
 **Results**
 ```console
-root:[~]: helm package hellonginx
+# helm package hellonginx
 Successfully packaged chart and saved it to: /root/hellonginx-0.1.0.tgz
 ````
 
@@ -722,7 +732,7 @@ Then, use the "bx pr" command to load the chart:
 
 **Results**
 ```console
-#  ibmcloud pr load-helm-chart --archive /root/hellonginx-0.1.0.tgz
+# ibmcloud pr load-helm-chart --archive /root/hellonginx-0.1.0.tgz
 Loading helm chart
 Loaded helm chart
 

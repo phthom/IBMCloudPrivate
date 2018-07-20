@@ -5,24 +5,27 @@
 IBM Cloud Private - Terraform Lab
  </b></a></div>
 
+
 ---
+# Terraform Lab
+---
+
 
 ![](./images/Terraform-logo.png)
 
-# Terraform Lab
 
-Terraform is a tool for building, changing, and versioning infrastructure safely and efficiently. Terraform can manage existing and popular service providers as well as custom in-house solutions.
+Terraform is a tool for building, changing, and versioning **infrastructure** safely and efficiently. Terraform can manage existing and popular service providers as well as custom in-house solutions.
 
 Configuration files describe to Terraform the components needed to run a single application or your entire datacenter. Terraform generates an execution plan describing what it will do to reach the desired state, and then executes it to build the described infrastructure. As the configuration changes, Terraform is able to determine what changed and create incremental execution plans which can be applied.
 
 The infrastructure Terraform can manage includes low-level components such as compute instances, storage, and networking, as well as high-level components such as DNS entries, SaaS features, etc.
 
-**In this tutorial, you will use Terraform to create a new VM in the IBM Cloud Infrastructure so that you can automatically install IBM Cloud Private in a  standalone cluster.** 
+**In this tutorial, you will use Terraform to create a new VM in the _IBM Cloud_ Infrastructure so that you can automatically install IBM Cloud Private in a  standalone cluster.** 
 
 > **IMPORTANT PREREQ** : you should have an IBM Cloud Infrastructure (SoftLayer) account to execute this lab.
 
 
-### Table of Contents
+## Table of Contents
 
 ---
 - [Task 1: Getting IBM Cloud Infra information](#task-1--getting-ibm-cloud-infra-information)
@@ -200,7 +203,7 @@ resource "softlayer_virtual_guest" "icpw" {
 
 
 Then create anther file called **variables.tf**. 
-In that file (see the example below). Change the datacenter default (**lon02**) with the one  of your choice. Specify a new **hostname** (or instance name).Finally, specify the number of VMs that you want and all the parameters (cpu_size, memory, cores ...) including the last one (**SSHKEYID**). **nodes** represent the number of VMs that you want to order to IBM.
+In that file (see the example below). Change the datacenter default (**lon02**) with the one  of your choice. Specify a new **hostname** (or instance name).Finally, specify the number of VMs that you want and all the parameters (cpu_size, memory, cores ...) including the last one (**SSHKEYID**). Don't forget that **nodes** represents the number of VMs that you want to order to IBM.
 
 ```console
 ##### Common VM specifications ######
@@ -379,7 +382,7 @@ Then you can connect to the VM either using the root/password or the sshkey (or 
 
 `ssh root@ipaddress`
 
-> Note : to delete a VM, use the following command : slcli vs cancel vm-id where the vm-id is the number found on the list of VMs.
+> Note : to delete a VM, use the following command : `slcli vs cancel vm-id` where the vm-id is the number found on the list of VMs.
 
 # Task 8: Using scripts to configure the VM
 
@@ -428,6 +431,8 @@ echo "$MASTERIP $HOSTNAME.ibm.ws $HOSTNAME" >> /etc/hosts
 echo "*** Add some modules"
 apt-get -y install apt-transport-https ca-certificates curl software-properties-common python-minimal jq
 sysctl -w vm.max_map_count=262144
+sed -i '/ swap / s/^/#/' /etc/fstab
+echo "vm.max_map_count=262144" >> /etc/sysctl.conf
 
 # Docker GPG key
 echo "*** Docker GPG key"
@@ -633,8 +638,10 @@ provisioner "remote-exec" {
 
 To avoid a common error `Error retrieving SSH key: SOAP-ENV:Client: Bad Request (HTTP 200)`, then on your **laptop** : 
 
-Go to your personal directory and visualize this file : `more ~/.softlayer`
-The
+Go to your personal directory and visualize this file : 
+
+`more ~/.softlayer`
+
 ```console 
 # more .softlayer
 [softlayer]
@@ -656,7 +663,6 @@ timeout = 0
 ```
 
 
-
 Save the modifications and redo the `terraform plan` and `terraform apply`.
 This will automatically create the VM and launch the IBM Cloud Private installation (you will see the same steps as usually).
 
@@ -664,7 +670,11 @@ Test the access to the IBM Cloud Private console :
 
 https://ipaddress:8443
 
-> Note : to delete a VM, use the following command : `slcli vs cancel vm-id` where the vm-id is the number found on the list of VMs.
+**Note** : to delete a VM, use the following command : 
+
+`slcli vs cancel vm-id` 
+
+where the vm-id is the number found on the list of VMs.
 
 # Congratulations 
 

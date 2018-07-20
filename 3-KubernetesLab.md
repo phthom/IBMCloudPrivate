@@ -2,6 +2,12 @@
 <div style="background-color:black;color:white; vertical-align: middle; text-align:center;font-size:250%; padding:10px; margin-top:100px"><b>
 IBM Cloud Private - Kubernetes Lab
  </b></a></div>
+ 
+ 
+---
+# Kubernetes Lab
+---
+
 
 
 ![kube](images/kube2.png)
@@ -11,7 +17,7 @@ IBM Cloud Private - Kubernetes Lab
 ---
 
 - [Task 1 : Deploying Apps with Kubernetes](#task-1---deploying-apps-with-kubernetes)
-    + [1. Login to Ubuntu VM as **root** using SSH or Putty.](#1-login-to-ubuntu-vm-as---root---using-ssh-or-putty)
+    + [1. Login to Ubuntu VM](#1-login-to-ubuntu-vm-as---root---using-ssh-or-putty)
     + [2.Modify your hosts file on your laptop](#2modify-your-hosts-file-on-your-laptop)
     + [3. Download a GIT repo for this exercise](#3-download-a-git-repo-for-this-exercise)
     + [4. Build a Docker image](#4-build-a-docker-image)
@@ -38,7 +44,9 @@ IBM Cloud Private - Kubernetes Lab
 
 
 
-### 1. Login to Ubuntu VM as **root** using SSH or Putty. 
+### 1. Login to the Ubuntu VM 
+
+You must login as **root** using SSH or Putty. 
 
 Also test your connectivity to the cluster with this command:
 

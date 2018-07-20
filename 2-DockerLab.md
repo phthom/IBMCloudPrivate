@@ -1,19 +1,23 @@
 <div style="background-color:black;color:white; vertical-align: middle; text-align:center;font-size:250%; padding:10px; margin-top:100px"><b>
 IBM Cloud Private - Docker Lab
  </b></a></div>
+ 
+ 
+---
+# Docker Lab
+---
 
- ---
+
+
  
 ![Docker Logo](./images/docker2.png)
  
  ---
 
-# Docker Lab
-
 ## Table of Contents
 
-  * [Prerequisites](#prerequisites)
-  * [Lab1 - Working with Docker](#lab1---working-with-docker)
+  - [Prerequisites](#prerequisites)
+  - [Task 1 - Working with Docker](#lab1---working-with-docker)
     + [1. Launch a shell and confirm that docker is installed.](#1-launch-a-shell-and-confirm-that-docker-is-installed)
     + [2. As with all new computer things, it is obligatory that we start with "hello-world"](#2-as-with-all-new-computer-things--it-is-obligatory-that-we-start-with--hello-world-)
     + [3. Rerun "hello-world" Notice that the image is not pulled down again. It already exists locally, so it is run.](#3-rerun--hello-world--notice-that-the-image-is-not-pulled-down-again-it-already-exists-locally--so-it-is-run)
@@ -29,21 +33,21 @@ IBM Cloud Private - Docker Lab
     + [13. Did you forget about the hello-world image?](#13-did-you-forget-about-the-hello-world-image-)
     + [14. Oops, we can't delete that image until we delete the "couchdb" container.](#14-oops--we-can-t-delete-that-image-until-we-delete-the--couchdb--container)
     + [15. Delete the couchdb container, delete the couchdb image, and make sure it is gone. You can leave hello-world.](#15-delete-the-couchdb-container--delete-the-couchdb-image--and-make-sure-it-is-gone-you-can-leave-hello-world)
-  * [Lab 2: Building Docker Images](#lab-2--building-docker-images)
+  - [Task 2 - Building Docker Images](#lab-2--building-docker-images)
     + [1. Our First Dockerfile](#1-Our-First-Dockerfile)
     + [2. Our Web Application](#2-Our-Web-Application)
-  * [Conclusion](#conclusion)
+  - [Conclusion](#conclusion)
    
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 
-## Prerequisites
+# Prerequisites
 This set of instructions requires that docker is already installed and docker commands can be run from a bash shell. You can get more information at the [Docker website](https://www.docker.com/get-docker)
 
 >***Note:*** This lab assumes that you are running this from a "clean" environment. Clean means that you have not used docker with the images in this lab. This is important for someone who hasn't seen docker so they can see the activity as images are downloaded.
 
-## Lab1 - Working with Docker
+# Task 1 - Working with Docker
 
 Before starting, login to the Ubuntu VM as **root**.  
 
@@ -185,7 +189,7 @@ You will noticed that all containers that you are listing have been stopped.
   
 
 
-## Lab 2: Building Docker Images
+# Task 2 - Building Docker Images
 
 A Dockerfile is a text file that has a series of instructions on how to build your image. It supports a simple set of commands that you need to use in your Dockerfile. There are several commands supported like FROM, CMD, ENTRYPOINT, VOLUME, ENV and more. We shall look at some of them.
 
@@ -332,7 +336,7 @@ cat: can't open 'somefile.txt': No such file or directory
 
 You get the point?
 
-### 2. Our Web Application
+### 2. Web Application
 
 Now, let us look at another Dockerfile shown below:
 
@@ -388,12 +392,11 @@ You should see :
 ![NGINX](./images/nginx2.png)  
 
 
-## Conclusion
+# Conclusion
 
 Congratulations, you have successfully completed this Containers lab!.  You've just deployed your first Docker-based web app on IBM Cloud Private!  In this lab, you learned how to tag and push local images to IPC, inspect pushed images for security vulnerabilities, and run hosted multi-container applications on IBM Containers.
 
 
-### End of the lab
 ---
 
 <div style="background-color:black;color:white; vertical-align: middle; text-align:center;font-size:250%; padding:10px; margin-top:100px"><b>

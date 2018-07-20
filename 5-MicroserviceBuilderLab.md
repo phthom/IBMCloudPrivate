@@ -5,18 +5,22 @@
 IBM Cloud Private - Microservice Builder Lab
  </b></a></div>
 
+
 ---
+# Microservice Builder Lab
+---
+
 
 ![microbuilder](images/microbuilder.png)
 
+---
 
-# Cloud-Native Microservice Builder Lab
 
 In this tutorial, you create, install and run a cloud-native microservice application on an IBM® Cloud Private platform on Kubernetes.
 
 Microservice Builder will guide you thru the tree creation of complete project including all the directories, the manifest files, the monitoring option that you need for a perfect application.
 
-**Table of Contents**
+## Table of Contents
 
 ---
 
@@ -91,7 +95,7 @@ If this command doesn't show, then go to the end of the ICP Installation Lab and
 
 Application workloads can be deployed to run on an IBM Cloud Private cluster. The deployment of an application workload must be made available as a Helm package. Such packages must either be made available for deployment on a Helm repository, or loaded into an IBM Cloud Private internal Helm repository.
 
-## 1. Create your project
+### 1. Create your project
 
 `ibmcloud dev create`
 
@@ -175,7 +179,7 @@ In that node.js program, you can also notice that we already have predefined lib
 
 
 
-## 2. Build your project
+### 2. Build your project
 
 `cd abraca`
 
@@ -208,7 +212,7 @@ REPOSITORY             TAG                 IMAGE ID            CREATED          
 abraca-express-tools   latest              e3072a821f87        3 minutes ago       483MB
 ```
 
-## 3. Modify your project to access ICP
+### 3. Modify your project to access ICP
 
 Login to the container registry in the cluster
 `docker login mycluster.icp:8500`
@@ -319,7 +323,6 @@ Try the URL : `http://ipaddress:31245` from a browser.
 # Congratulations
 
 You have successfully created and installed a microservice application with Microservice Builder.
-
 
 ----
 

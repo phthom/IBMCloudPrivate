@@ -147,7 +147,7 @@ At least (minimal):
 - [ ] Storage = 40 GB (depending on the other solutions that you install on top of ICP)
 
 Depending on the installation types:
-- [ ] First option: Ubuntu 16.04 (Sever or Desktop) in a **VMware VM**
+- [ ] First option: Ubuntu 16.04 (Sever or Desktop) in a VMware VM or a **virtual server** on Cloud
 - [ ] Second Option:  Vagrant and **VirtualBox**
 
 If you need some more help, see the official documentation: [here](https://www.ibm.com/support/knowledgecenter/en/SSBS6K_2.1.0.3/kc_welcome_containers.html)
@@ -250,11 +250,25 @@ apt-get install apt-transport-https ca-certificates curl software-properties-com
 
 Check carefully the output to see if you have errors and especially if you cannot connect.
 
+![apt install](./images/Update2.png)
+
 Increase your virtual memory maximum by typing the command:
 
 `sysctl -w vm.max_map_count=262144`
 
-![apt install](./images/Update2.png)
+K8s won't run with swap enabled. swapoff -a is the Ubuntu command for disabling it.
+
+`swapoff -a`
+
+
+> IMPORTANT. The 2 previous commands only work when the system is online. If it is rebooted then these settings are lost and have to be re-run before k8s will start. 
+
+These commands can be turned on permanently by typing:
+
+```
+sed -i '/ swap / s/^/#/' /etc/fstab
+echo "vm.max_map_count=262144" >> /etc/sysctl.conf
+```
 
 
 ### Task 2 : Add Docker’s official GPG key

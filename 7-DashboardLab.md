@@ -6,10 +6,11 @@ IBM Cloud Private - Dashboard Lab
  </b></a></div>
 
 ---
+# Dashboard Lab
+---
 
 ![](./images/dashboard-ui.png)
 
-# Dashboard Lab
 
 **Kubernetes Dashboard** is a general purpose, web-based UI for Kubernetes clusters. It allows users to manage applications running in the cluster and troubleshoot them, as well as manage the cluster itself.
 
@@ -18,7 +19,7 @@ The purpose of this lab is to install the dashboard in the IBM Cloud Private Clu
 > **Prerequisites** : you should be logged on your VM and connected to your ICP master.
 
 
-### Table of Contents
+## Table of Contents
 
 ---
 - [Task 1: Download the manifest file](#task-1--download-the-manifest-file)
@@ -136,7 +137,7 @@ The following screen should appear :
 
 ![](./images/token.png)
 
-Click on token radio button and paste your token. 
+Click on token radio button and paste your **token**. 
 
 ![](./images/token3.png)
 
@@ -197,8 +198,6 @@ Navigate on the left pane :
 
 You have successfully installed, deployed and customized the Kubernetes Dashboard for an **IBM Cloud Private** cluster.
 
-
-----
 
 
 <div style="background-color:black;color:white; vertical-align: middle; text-align:center;font-size:250%; padding:10px; margin-top:100px"><b>
