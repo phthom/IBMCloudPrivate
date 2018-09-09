@@ -26,6 +26,21 @@ Microclimate will guide you thru the creation of complete project including all 
 
 ---
 
+- [Task 1: Access the console and check Helm](#task-1--access-the-console-and-check-helm)
+- [Task 2: Install Microclimate](#task-2--install-microclimate)
+  * [1. Prepare the environment](#1-prepare-the-environment)
+    + [Add persistent volumes](#add-persistent-volumes)
+    + [Create a Docker registry secret for Microclimate](#create-a-docker-registry-secret-for-microclimate)
+    + [Patch this secret to a service account](#patch-this-secret-to-a-service-account)
+    + [Ensure target namespace for deployments](#ensure-target-namespace-for-deployments)
+    + [Create a secret to use Tiller over TLS](#create-a-secret-to-use-tiller-over-tls)
+  * [2. Install from the command line](#2-install-from-the-command-line)
+- [Task 3: Install a simple application](#task-3--install-a-simple-application)
+- [Task 4: Import and deploy an application](#task-4--import-and-deploy-an-application)
+- [Task 5: Use a pipeline](#task-5--use-a-pipeline)
+- [Congratulations](#congratulations)
+
+
 ---
 
 

@@ -15,7 +15,9 @@
 
 
 # Table of Content
-
+---
+- [Single Node Installation of IBM Cloud Private](#single-node-installation-of-ibm-cloud-private)
+- [Table of Content](#table-of-content)
 - [1. IBM Cloud Private Overview](#1-ibm-cloud-private-overview)
     + [What is a private Cloud ?](#what-is-a-private-cloud--)
     + [Terminology](#terminology)
@@ -31,7 +33,7 @@
     + [Task 6: SSH Keys setup](#task-6--ssh-keys-setup)
     + [Task 7: Customize ICP](#task-7--customize-icp)
     + [Task 7: Install ICP](#task-7--install-icp)
-    + [Task 8: Install and configure CLIs  (kubectl, ibmcloud pr, ibmcloud dev)](#task-8--install-and-configure-clis---kubectl--ic-px--ic-dev-)
+    + [Task 8: Install and configure CLIs](#task-8--install-and-configure-clis)
     + [Task 9: Adding persistent storage to Kubernetes](#task-9--adding-persistent-storage-to-kubernetes)
     + [Task 10: End of installation](#task-10--end-of-installation)
 - [5. Second Option: Using Vagrant and VirtualBox](#5-second-option--using-vagrant-and-virtualbox)
@@ -66,8 +68,9 @@
     + [Task B3 - Edit ICP secrets](#task-b3---edit-icp-secrets)
     + [Task B4 - Delete the auth pods](#task-b4---delete-the-auth-pods)
     + [Task B5 - Test the new password](#task-b5---test-the-new-password)
+- [appendix C : How to connect to a cluster](#appendix-c---how-to-connect-to-a-cluster)
 - [End of Appendix](#end-of-appendix)
-
+---
 
 
 # 1. IBM Cloud Private Overview
@@ -200,7 +203,7 @@ eth1      Link encap:Ethernet  HWaddr 06:29:fc:86:31:fa
           RX bytes:13508626 (13.5 MB)  TX bytes:17795310 (17.7 MB)
 ```
 
-or use the following command :
+**Better use the following command** :
 
 `curl ifconfig.co`
 
@@ -211,26 +214,26 @@ Results:
 ```
 
 > This address should be same as the one used to ssh your VM.
+> Take a note of this ip address. This will be referred as **ipaddress** in the labs. 
 
 Then, edit the hosts file with this command:
 
 `nano /etc/hosts`
 
-Results:
+You should have the following lines already in the file:
 ```console
 127.0.0.1	localhost
 127.0.1.1	myhostname.workshop	myhostname
 ...
 ```
 
-> Note : you can see some IP v6 definitions - don't touch them.
-> Don't touch the hostnames
+> Note : you can see some IP v6 definitions - **don't touch them**
 
-Change the line containing **127.0.1.1** with your ipaddress :
+> **Don't touch the hostnames**
+
+Change the line containing **127.0.1.1** with your **ipaddress**. So it look like:
 
 **123.456.789.123**   myhostname.workshop	    myhostname     
-
-> Save the file (ctrl O, enter, ctrl X )
 
 Your /etc/hosts file should look like that after the change (please don't touch the hostnames):
 
@@ -240,6 +243,8 @@ Your /etc/hosts file should look like that after the change (please don't touch 
 123.456.789.123 	niceicp15.sl.workshop	niceicp15
 ...
 ```
+
+Save the file (ctrl O, enter, ctrl X )
 
 Use the following 2 commands to **update** the system with some complementary packages:
 
@@ -434,7 +439,9 @@ You can look at the (helm) catalog and visit some entries (but don't create any 
 ### Task 8: Install and configure CLIs
 
 At this point, you will need to install the **Kubernetes CLI** (command kubectl).  
-For that purpose, open a ssh terminal with the Ubuntu VM in root mode and type the following command:
+For that purpose, open a ssh terminal with the Ubuntu VM in root mode.
+
+Use the following command to download **kubectl**:
 
 ```console
 docker run -e LICENSE=accept --net=host -v /usr/local/bin:/data ibmcom/icp-inception:2.1.0.3 cp /usr/local/bin/kubectl /data
@@ -442,27 +449,16 @@ docker run -e LICENSE=accept --net=host -v /usr/local/bin:/data ibmcom/icp-incep
 
 This docker command will copy the kubectl program to the /usr/local/bin.
 
-Now, you need to setup the endpoint to tell the kubectl command where is the ICP Cluster and what are the correct certificates.
-To do so, go to the ICP console and select your profile on the right hand:
+We now need to configure kubectl to get access to the cluster. An alternative method can be used (see Appendix C : How to get connected to the cluster) if you are interested.
 
-![Configure Client](./images/Client.png)
-
-Click on Configure client:
-
-![Configure Client](./images/ClientSetup.png)
-
-These 5 lines contain a token that change every 12 hours. So then, you generally have to use these 5 commands to get connected.
-
-> We are **not** going to use this method to connect to the cluster
-
-We are going to create a script to help us to connect to our cluster.
-Go back to the ssh or putty terminal :
+We are going to create a **script** to help us to connect to our cluster.
+Type the following commands :
 
 `cd`
 
 `nano connect2icp.sh`
 
-Copy the following code (inspired from the 5 lines) :
+Copy the following code :
 
 ```console
 CLUSTERNAME=mycluster
@@ -483,6 +479,8 @@ Save the file (ctrl O, enter, ctrl X ) and make this file executable :
 
 `chmod +x connect2icp.sh`
 
+> These lines in that script are getting a token automatically for you. But every 12 hours, the token expires and you will need to type that script (connect2icp.sh) again. 
+
 Then execute that shell program :
 
 `~/connect2icp.sh`
@@ -498,7 +496,8 @@ Context "cluster.local-context" modified.
 Switched to context "cluster.local-context".
 ```
 
-As a result, you will see that you are now **connected** to the cluster (with only one node):
+
+As a result, you will see that you are now **connected** for **12 hours** to the cluster (with only one node):
 
 `kubectl version --short`
 
@@ -552,13 +551,13 @@ Now test your new commands:
 
 ![Alias](./images/testK.png)
 
-Finally, you can also install the **ic** command (former bx command) :
+Finally, you can also install the **ibmcloud** command (former bx command) :
 
 `curl -fsSL https://clis.ng.bluemix.net/install/linux | sh`
 
 ![bx CLI](./images/bxCLI.png)
 
-the **ibmcloud** command is a generic command for all the IBM Cloud (private and public). The former name bx comes from Bluemix.
+The **ibmcloud** command is a generic command for all the IBM Cloud (private and public). The former name bx comes from Bluemix.
 
 The ibmcloud command is using **plugins** to add some features. Now, download the ibmcloud pr **plugin** to get the ICP specific commands:
 
@@ -1064,6 +1063,18 @@ Switched to context "mycluster.icp-context".
 ```
 
 
+#  appendix C : How to connect to a cluster
+
+You need to setup the endpoint to tell the kubectl command where is the ICP Cluster and what are the correct certificates.
+To do so, go to the ICP console and select your profile on the right hand:
+
+![Configure Client](./images/Client.png)
+
+Click on Configure client:
+
+![Configure Client](./images/ClientSetup.png)
+
+These 5 lines contain a token that change every 12 hours. So then, you generally have to use these 5 commands to get connected.
 
 
 ---

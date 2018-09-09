@@ -269,6 +269,8 @@ Generally an helm chart is managing many pods, deployments, images, secrets, vol
 
 Move to the Lab 2 directory:
 
+`git clone https://github.com/IBM/container-service-getting-started-wt.git`
+
 `cd "/root/container-service-getting-started-wt/Lab 2"`
 
 
@@ -278,12 +280,16 @@ Then build the container:
 
 `docker images mycluster.icp:8500/default/hello-world`
 
+`docker push mycluster.icp:8500/default/hello-world:2`
+
 Result:
 
 ![Build2](./images/Build2.png)
 
 
 ### 2. View the image in the console:
+
+Type https://ipaddress:8443
 
 	- Select **Menu > Manage > Images**
 	- Click on the `default/hello-world`
@@ -675,7 +681,7 @@ hellonginx-6bcd9f4578-zqt6r   1/1       Running   0          11m
 
 ### 7. Upgrade
 
-We now want to change the number of replicas to 3:
+We now want to change the number of replicas to 3 (change the **replicaCount** variable in the **values.yaml** file:
 
 `helm  upgrade hellonginx . --tls`
 
