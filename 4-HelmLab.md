@@ -269,8 +269,6 @@ Generally an helm chart is managing many pods, deployments, images, secrets, vol
 
 Move to the Lab 2 directory:
 
-`git clone https://github.com/IBM/container-service-getting-started-wt.git`
-
 `cd "/root/container-service-getting-started-wt/Lab 2"`
 
 
